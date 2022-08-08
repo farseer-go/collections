@@ -1,6 +1,10 @@
 package collections
 
-import "reflect"
+import (
+	"github.com/devfeel/mapper"
+	"reflect"
+	"strings"
+)
 
 // List 集合
 type List[T any] struct {
@@ -16,7 +20,11 @@ func NewList[T any](source ...T) List[T] {
 
 // Add 添加元素
 func (receiver *List[T]) Add(item ...T) {
-	*receiver.source = append(*receiver.source, item...)
+	if receiver.source == nil {
+		receiver.source = &item
+	} else {
+		*receiver.source = append(*receiver.source, item...)
+	}
 }
 
 // Count 集合大小
@@ -40,7 +48,7 @@ func (receiver *List[T]) Index(index int) T {
 }
 
 // Contains 是否包含元素
-func (receiver List[T]) Contains(item T) bool {
+func (receiver *List[T]) Contains(item T) bool {
 	itemValue := reflect.ValueOf(item)
 	for _, t := range *receiver.source {
 		if reflect.ValueOf(t) == itemValue {
@@ -51,7 +59,7 @@ func (receiver List[T]) Contains(item T) bool {
 }
 
 // IndexOf 元素在集合的索引位置
-func (receiver List[T]) IndexOf(item T) int {
+func (receiver *List[T]) IndexOf(item T) int {
 	itemValue := reflect.ValueOf(item)
 	for index, t := range *receiver.source {
 		if reflect.ValueOf(t) == itemValue {
@@ -62,7 +70,7 @@ func (receiver List[T]) IndexOf(item T) int {
 }
 
 // Remove 移除元素
-func (receiver List[T]) Remove(item T) {
+func (receiver *List[T]) Remove(item T) {
 	itemValue := reflect.ValueOf(item)
 	for i := 0; i < len(*receiver.source); i++ {
 		if reflect.ValueOf((*receiver.source)[i]) == itemValue {
@@ -108,4 +116,33 @@ func (receiver *List[T]) Insert(index int, item T) {
 // Clear 清空集合
 func (receiver *List[T]) Clear() {
 	receiver.source = &[]T{}
+}
+
+// MapToList 类型转换，比如List[PO] 转换为 List[DO]
+// toList：必须为List类型
+func (receiver *List[T]) MapToList(toList any) {
+	toValue := reflect.ValueOf(toList)
+	toType := toValue.Type()
+	if !strings.HasPrefix(toType.Elem().String(), "collections.List[") {
+		panic("要转换的类型，必须也是collections.List集合")
+	}
+	destToArrayType := toValue.MethodByName("ToArray").Type().Out(0)
+	destArr := reflect.New(destToArrayType).Interface()
+	_ = mapper.MapperSlice(receiver.ToArray(), destArr)
+
+	toValue.MethodByName("Add").CallSlice([]reflect.Value{reflect.ValueOf(destArr).Elem()})
+}
+
+// MapToArray 类型转换，比如List[PO] 转换为 []DO
+// toSlice：必须为切片类型
+func (receiver *List[T]) MapToArray(toSlice any) {
+	toValue := reflect.ValueOf(toSlice)
+	toType := toValue.Type()
+	if toType.Elem().Kind() != reflect.Slice {
+		panic("要转换的类型，必须是切片类型")
+	}
+	destArr := reflect.New(toType.Elem()).Interface()
+	_ = mapper.MapperSlice(receiver.ToArray(), destArr)
+
+	toValue.Elem().Set(reflect.ValueOf(destArr).Elem())
 }

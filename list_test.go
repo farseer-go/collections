@@ -102,5 +102,64 @@ func TestList_Insert(t *testing.T) {
 }
 
 func TestList_Clear(t *testing.T) {
+	list := NewList[int]()
+	list.Add(1, 2, 3)
+	list.Clear()
+	if list.Count() != 0 {
+		t.Error()
+	}
+}
 
+func TestList_MapToList(t *testing.T) {
+	type a struct {
+		Name string
+	}
+
+	type b struct {
+		Name string
+	}
+	list := NewList[a]()
+	list.Add(a{"steden1"}, a{"steden2"})
+
+	var list2 List[b]
+	list.MapToList(&list2)
+
+	if list2.Count() != 2 {
+		t.Error()
+	}
+
+	if list.Index(0).Name != list2.Index(0).Name {
+		t.Error()
+	}
+
+	if list.Index(1).Name != list2.Index(1).Name {
+		t.Error()
+	}
+}
+
+func TestList_MapToArray(t *testing.T) {
+	type a struct {
+		Name string
+	}
+
+	type b struct {
+		Name string
+	}
+	list := NewList[a]()
+	list.Add(a{"steden1"}, a{"steden2"})
+
+	var list2 []b
+	list.MapToArray(&list2)
+
+	if len(list2) != 2 {
+		t.Error()
+	}
+
+	if list.Index(0).Name != list2[0].Name {
+		t.Error()
+	}
+
+	if list.Index(1).Name != list2[1].Name {
+		t.Error()
+	}
 }
