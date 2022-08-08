@@ -6,6 +6,7 @@ type IList struct {
 	source []any
 }
 
+// NewIList 创建集合
 func NewIList(source ...any) IList {
 	return IList{
 		source: source,

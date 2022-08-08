@@ -7,6 +7,7 @@ type List[T any] struct {
 	source []T
 }
 
+// NewList 创建集合
 func NewList[T any](source ...T) List[T] {
 	return List[T]{
 		source: source,
