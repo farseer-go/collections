@@ -1,0 +1,8 @@
+go 1.19
+
+use (
+	./
+)
+replace (
+    github.com/farseer-go/fs => ../fs
+)
