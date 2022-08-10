@@ -1,6 +1,5 @@
 # collections
-Dynamic arrays
-
+Support for List collections and linq syntax
 
 ## What are the functions?
 
