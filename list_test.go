@@ -1,12 +1,33 @@
 package collections
 
 import (
+	"fmt"
 	"testing"
 )
 
+func TestList_Source(t *testing.T) {
+	list := NewList[int](1, 2, 3, 4, 5, 6)
+	list.Add(7)
+	fmt.Println(list.source)
+	fmt.Println(list.enumerable.source)
+	fmt.Println(list.collection.source)
+	fmt.Println(list.list.source)
+	// {"1", "2"}, {"3", "4"}
+
+}
+
+/*
 func TestList_Add(t *testing.T) {
 	list := NewList[int]()
 	list.Add(1)
+	if list.Count() != 1 {
+		t.Error()
+	}
+}
+
+func TestList_Take(t *testing.T) {
+	list := NewList[int](1, 2, 3, 4, 5)
+	list.Take(3)
 	if list.Count() != 1 {
 		t.Error()
 	}
@@ -163,3 +184,4 @@ func TestList_MapToArray(t *testing.T) {
 		t.Error()
 	}
 }
+*/

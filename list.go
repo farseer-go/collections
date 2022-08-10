@@ -1,148 +1,33 @@
 package collections
 
-import (
-	"github.com/devfeel/mapper"
-	"reflect"
-	"strings"
-)
-
 // List 集合
 type List[T any] struct {
-	source *[]T
+	source        *[]T // 集合
+	list[T]            // 对集合做修改操作
+	enumerable[T]      // 对集合做读操作
 }
 
 // NewList 创建集合
 func NewList[T any](source ...T) List[T] {
-	return List[T]{
+	if source == nil {
+		source = []T{}
+	}
+	var lst = List[T]{
 		source: &source,
+		list: list[T]{
+			source: &source,
+			collection: collection[T]{
+				source: &source,
+			},
+		},
+		enumerable: enumerable[T]{
+			source: &source,
+		},
 	}
+	return lst
 }
 
-// Add 添加元素
-func (receiver *List[T]) Add(item ...T) {
-	if receiver.source == nil {
-		receiver.source = &item
-	} else {
-		*receiver.source = append(*receiver.source, item...)
-	}
-}
-
-// Count 集合大小
-func (receiver *List[T]) Count() int {
-	return len(*receiver.source)
-}
-
-// ToArray 转成数组
-func (receiver *List[T]) ToArray() []T {
-	return *receiver.source
-}
-
-// IsEmpty 集合是为空的
-func (receiver *List[T]) IsEmpty() bool {
-	return receiver.source == nil || len(*receiver.source) == 0
-}
-
-// Index 获取第index索引位置的元素
-func (receiver *List[T]) Index(index int) T {
-	return (*receiver.source)[index]
-}
-
-// Contains 是否包含元素
-func (receiver *List[T]) Contains(item T) bool {
-	itemValue := reflect.ValueOf(item)
-	for _, t := range *receiver.source {
-		if reflect.ValueOf(t) == itemValue {
-			return true
-		}
-	}
-	return false
-}
-
-// IndexOf 元素在集合的索引位置
-func (receiver *List[T]) IndexOf(item T) int {
-	itemValue := reflect.ValueOf(item)
-	for index, t := range *receiver.source {
-		if reflect.ValueOf(t) == itemValue {
-			return index
-		}
-	}
-	return -1
-}
-
-// Remove 移除元素
-func (receiver *List[T]) Remove(item T) {
-	itemValue := reflect.ValueOf(item)
-	for i := 0; i < len(*receiver.source); i++ {
-		if reflect.ValueOf((*receiver.source)[i]) == itemValue {
-			receiver.RemoveAt(i)
-			i--
-		}
-	}
-}
-
-// RemoveAt 移除指定索引的元素
-func (receiver *List[T]) RemoveAt(index int) {
-	if index < 0 {
-		panic("index值不能小于0")
-	}
-	if index >= len(*receiver.source) {
-		panic("index值不能超出集合的长度")
-	}
-
-	if index == 0 {
-		*receiver.source = (*receiver.source)[1:]
-	} else {
-		//*receiver.source = receiver.source[:index+copy(receiver.source[index:], receiver.source[index+1:])]
-		*receiver.source = append((*receiver.source)[:index], (*receiver.source)[index+1:]...)
-	}
-}
-
-// Insert 向第index索引位置插入元素
-func (receiver *List[T]) Insert(index int, item T) {
-	if index < 0 {
-		panic("index值不能小于0")
-	}
-	if index >= len(*receiver.source) {
-		panic("index值不能超出集合的长度")
-	}
-
-	if index == 0 {
-		*receiver.source = append([]T{item}, *receiver.source...)
-	} else {
-		*receiver.source = append((*receiver.source)[:index], append([]T{item}, (*receiver.source)[index:]...)...)
-	}
-}
-
-// Clear 清空集合
-func (receiver *List[T]) Clear() {
-	receiver.source = &[]T{}
-}
-
-// MapToList 类型转换，比如List[PO] 转换为 List[DO]
-// toList：必须为List类型
-func (receiver *List[T]) MapToList(toList any) {
-	toValue := reflect.ValueOf(toList)
-	toType := toValue.Type()
-	if !strings.HasPrefix(toType.Elem().String(), "collections.List[") {
-		panic("要转换的类型，必须也是collections.List集合")
-	}
-	destToArrayType := toValue.MethodByName("ToArray").Type().Out(0)
-	destArr := reflect.New(destToArrayType).Interface()
-	_ = mapper.MapperSlice(receiver.ToArray(), destArr)
-
-	toValue.MethodByName("Add").CallSlice([]reflect.Value{reflect.ValueOf(destArr).Elem()})
-}
-
-// MapToArray 类型转换，比如List[PO] 转换为 []DO
-// toSlice：必须为切片类型
-func (receiver *List[T]) MapToArray(toSlice any) {
-	toValue := reflect.ValueOf(toSlice)
-	toType := toValue.Type()
-	if toType.Elem().Kind() != reflect.Slice {
-		panic("要转换的类型，必须是切片类型")
-	}
-	destArr := reflect.New(toType.Elem()).Interface()
-	_ = mapper.MapperSlice(receiver.ToArray(), destArr)
-
-	toValue.Elem().Set(reflect.ValueOf(destArr).Elem())
+// AsEnumerable 返回enumerable类型
+func (receiver *List[T]) AsEnumerable() enumerable[T] {
+	return receiver.enumerable
 }
