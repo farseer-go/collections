@@ -13,11 +13,10 @@ func (receiver *collection[T]) Count() int {
 
 // Add 添加元素
 func (receiver *collection[T]) Add(item ...T) {
-	if receiver.source == nil {
-		*receiver.source = item
-	} else {
-		*receiver.source = append(*receiver.source, item...)
+	if item == nil || len(item) == 0 {
+		return
 	}
+	*receiver.source = append(*receiver.source, item...)
 }
 
 // Clear 清空集合

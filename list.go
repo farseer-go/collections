@@ -9,25 +9,24 @@ type List[T any] struct {
 
 // NewList 创建集合
 func NewList[T any](source ...T) List[T] {
-	if source == nil {
-		source = []T{}
-	}
-	var lst = List[T]{
-		source: &source,
-		list: list[T]{
-			source: &source,
-			collection: collection[T]{
-				source: &source,
-			},
-		},
-		enumerable: enumerable[T]{
-			source: &source,
-		},
-	}
+	var lst = List[T]{}
+	lst.New()
+	lst.Add(source...)
 	return lst
 }
 
 // AsEnumerable 返回enumerable类型
 func (receiver *List[T]) AsEnumerable() enumerable[T] {
 	return receiver.enumerable
+}
+
+// New 返回enumerable类型
+func (receiver *List[T]) New() {
+	if receiver.source == nil {
+		source := &[]T{}
+		receiver.source = source
+		receiver.list.source = source
+		receiver.list.collection.source = source
+		receiver.enumerable.source = source
+	}
 }
