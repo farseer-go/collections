@@ -210,7 +210,7 @@ func (receiver *enumerable[T]) OrderByItem() enumerable[T] {
 	return enumerable[T]{source: &lst}
 }
 
-// OrderByDescending 正序排序，倒序排序，fn 返回的是要排序的字段的值
+// OrderByDescending 倒序排序，fn 返回的是要排序的字段的值
 func (receiver *enumerable[T]) OrderByDescending(fn func(item T) any) enumerable[T] {
 	lst := *receiver.source
 
@@ -239,7 +239,7 @@ func (receiver *enumerable[T]) OrderByDescending(fn func(item T) any) enumerable
 	return enumerable[T]{source: &lst}
 }
 
-// OrderByDescendingItem 正序排序，倒序排序，fn 返回的是要排序的字段的值
+// OrderByDescendingItem 倒序排序，fn 返回的是要排序的字段的值
 func (receiver *enumerable[T]) OrderByDescendingItem() enumerable[T] {
 	lst := *receiver.source
 
@@ -497,19 +497,19 @@ func (receiver *enumerable[T]) MapToArray(toSlice any) {
 	toValue.Elem().Set(reflect.ValueOf(destArr).Elem())
 }
 
-// Concat 连接两个list，组合成新的list
+// Concat 合并两个集合
 func (receiver *enumerable[T]) Concat(lstRight List[T]) enumerable[T] {
 	lst := append(*receiver.source, *lstRight.source...)
 	return enumerable[T]{source: &lst}
 }
 
-// Union 连接两个集合，组合成新的集合，并去重
+// Union 合并两个集合，并去重
 func (receiver *enumerable[T]) Union(lstRight List[T]) enumerable[T] {
 	union := receiver.Concat(lstRight)
 	return union.Distinct()
 }
 
-// Distinct 返回去重后的集合
+// Distinct 集合去重
 func (receiver *enumerable[T]) Distinct() enumerable[T] {
 	lst := NewList[T]()
 	for _, item := range *receiver.source {
