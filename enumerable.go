@@ -7,11 +7,6 @@ import (
 	"strings"
 )
 
-type IEnumerable[T any] interface {
-	// Contains 是否包含元素
-	Contains(item T) bool
-}
-
 type enumerable[T any] struct {
 	source *[]T
 }

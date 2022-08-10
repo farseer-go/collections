@@ -2,17 +2,6 @@ package collections
 
 import "reflect"
 
-type IList[T any] interface {
-	// Index 获取第index索引位置的元素
-	Index(index int) T
-	// IndexOf 元素在集合的索引位置
-	IndexOf(item T) int
-	// Insert 向第index索引位置插入元素
-	Insert(index int, item T)
-	// RemoveAt 移除指定索引的元素
-	RemoveAt(index int)
-}
-
 type list[T any] struct {
 	source *[]T
 	collection[T]

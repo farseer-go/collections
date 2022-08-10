@@ -2,19 +2,6 @@ package collections
 
 import "reflect"
 
-type ICollection[T any] interface {
-	// Count 集合大小
-	Count() int
-	// Add 添加元素
-	Add(item ...T)
-	// Clear 清空集合
-	Clear()
-	// Remove 移除元素
-	Remove(item T)
-	// RemoveAll 移除条件=true的元素
-	RemoveAll(fn func(item T) bool)
-}
-
 type collection[T any] struct {
 	source *[]T
 }
