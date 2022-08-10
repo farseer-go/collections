@@ -59,7 +59,7 @@ Dynamic arrays
     * List（泛型集合）
       * AsEnumerable（返回enumerable类型）
     * func
-      * NewList（创建集合）1
+      * NewList（创建集合）
       * NewPageList （数据分页列表及总数）
 
 ## Getting Started
@@ -67,8 +67,8 @@ Dynamic arrays
 lst := NewList[int](1, 2, 3, 4, 5, 6)
 lst.Add(7)
 lst.Where(func(item int) bool { return item >= 3 }).
-Where(func(item int) bool { return item >= 5 }).
-Distinct().Skip(1).Take(3).Contains(6)
+    Where(func(item int) bool { return item >= 5 }).
+    Distinct().Skip(1).Take(3).Contains(6)
 ```
 
 ## Add item
