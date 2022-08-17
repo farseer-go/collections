@@ -11,6 +11,7 @@ Support for List collections and linq syntax
       * IndexOf（元素在集合的索引位置）
       * Insert（向第index索引位置插入元素）
       * RemoveAt（移除指定索引的元素）
+      * Set（设置值）
     * collection
       * Count（集合大小）
       * Add（添加元素）
