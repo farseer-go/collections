@@ -9,6 +9,10 @@ func Test_list_Index(t *testing.T) {
 	if lst.Index(4) != 5 {
 		t.Error()
 	}
+	lst.Set(4, 9)
+	if lst.Index(4) != 9 {
+		t.Error()
+	}
 }
 
 func Test_list_IndexOf(t *testing.T) {

@@ -12,6 +12,11 @@ func (receiver *list[T]) Index(index int) T {
 	return (*receiver.source)[index]
 }
 
+// Set 设置值
+func (receiver *list[T]) Set(index int, item T) {
+	(*receiver.source)[index] = item
+}
+
 // IndexOf 元素在集合的索引位置
 func (receiver *list[T]) IndexOf(item T) int {
 	itemValue := reflect.ValueOf(item)
