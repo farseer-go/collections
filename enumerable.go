@@ -479,6 +479,16 @@ func (receiver enumerable[T]) MapToList(toList any) {
 	toValue.MethodByName("Add").CallSlice([]reflect.Value{reflect.ValueOf(destArr).Elem()})
 }
 
+// MapToListAny 转成ListAny
+func (receiver enumerable[T]) MapToListAny() ListAny {
+	array := receiver.ToArray()
+	lst := NewListAny()
+	for _, item := range array {
+		lst.Add(item)
+	}
+	return lst
+}
+
 // MapToArray 类型转换，比如List[PO] 转换为 []DO
 // toSlice：必须为切片类型
 func (receiver enumerable[T]) MapToArray(toSlice any) {

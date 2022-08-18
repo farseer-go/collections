@@ -428,3 +428,24 @@ func Test_enumerable_Except(t *testing.T) {
 		t.Error()
 	}
 }
+
+func Test_enumerable_MapToListAny(t *testing.T) {
+	type po struct {
+		Name string
+		Age  int
+	}
+	lst := NewList(po{Name: "steden", Age: 36}, po{Name: "steden", Age: 18}, po{Name: "steden2", Age: 40})
+	listAny := lst.MapToListAny()
+
+	if lst.Count() != listAny.Count() {
+		t.Error()
+	}
+
+	for i := 0; i < lst.Count(); i++ {
+		item := listAny.Index(i).(po)
+		if lst.Index(i).Name != item.Name || lst.Index(i).Age != item.Age {
+			t.Error()
+		}
+	}
+
+}
