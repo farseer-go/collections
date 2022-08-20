@@ -6,6 +6,7 @@ Support for List collections and linq syntax
 * collections
   * struct
     * PageList （用于分页数组，包含总记录数）
+      * MapToPageList（类型转换，如PageList[PO]转PageList[DO]）
     * list
       * Index（获取第index索引位置的元素）
       * IndexOf（元素在集合的索引位置）

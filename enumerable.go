@@ -417,9 +417,7 @@ func (receiver enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 
 		for _, item := range *receiver.source {
 			itemValue := reflect.ValueOf(fn(item))
-			for i := 0; i < itemValue.Len(); i++ {
-				value.MethodByName("Add").Call([]reflect.Value{itemValue.Index(i)})
-			}
+			value.MethodByName("Add").CallSlice([]reflect.Value{itemValue})
 		}
 		sliceOrListVal.Set(value.Elem())
 		return
@@ -502,18 +500,26 @@ func (receiver enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T
 // MapToList 类型转换，比如List[PO] 转换为 List[DO]
 // toList：必须为List类型
 func (receiver enumerable[T]) MapToList(toList any) {
-	toValue := reflect.ValueOf(toList)
-	toType := toValue.Type()
-	if !strings.HasPrefix(toType.Elem().String(), "collections.List[") {
+	toValue := reflect.ValueOf(toList).Elem()
+	// 传进来的，可能不是struct，而是通过反射创建的any
+	if toValue.Kind() == reflect.Ptr || toValue.Kind() == reflect.Interface {
+		toValue = toValue.Elem()
+	}
+	if !strings.HasPrefix(toValue.Type().String(), "collections.List[") {
 		panic("要转换的类型，必须也是collections.List集合")
 	}
+
+	// 拿到数组类型后，先mapper到数组
 	destToArrayType := toValue.MethodByName("ToArray").Type().Out(0)
 	destArr := reflect.New(destToArrayType).Interface()
 	_ = mapper.MapperSlice(receiver.ToArray(), destArr)
+
+	newValue := reflect.New(toValue.Type())
 	// 初始化集合
-	toValue.MethodByName("New").Call(nil)
+	newValue.MethodByName("New").Call(nil)
 	// 将数组添加到集合
-	toValue.MethodByName("Add").CallSlice([]reflect.Value{reflect.ValueOf(destArr).Elem()})
+	newValue.MethodByName("Add").CallSlice([]reflect.Value{reflect.ValueOf(destArr).Elem()})
+	reflect.ValueOf(toList).Elem().Set(newValue.Elem())
 }
 
 // MapToListAny 转成ListAny
