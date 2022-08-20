@@ -214,16 +214,28 @@ lst1.Except(lst2)                       // return NewList(1, 2)
 
 ## Select
 ```go
-// Select----------------------------------------------------->
+// []string----------------------------------------------------->
 lst := NewList("1", "", "2")
 var arr []string
 lst.Select(&arr, func(item string) any {    // arr = {"go:1", "go:", "go:2"}
     return "go:" + item
 })
-// SelectMany----------------------------------------------------->
+// List[string]----------------------------------------------------->
+var lstSelect List[string]
+lst.Select(&lstSelect, func(item string) any {
+    return "go:" + item
+})
+```
+## SelectMany
+```go
 lst := NewList([]string{"1", "2"}, []string{"3", "4"})
 var arr []string
 lst.SelectMany(&arr, func(item []string) any {  // arr = "1", "2", "3", "4"
+    return item
+})
+
+var lst2 List[string]
+lst.SelectMany(&lst2, func(item []string) any {
     return item
 })
 ```

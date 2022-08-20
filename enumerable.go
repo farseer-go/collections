@@ -336,27 +336,43 @@ func (receiver enumerable[T]) OrderByDescendingItem() enumerable[T] {
 //
 //	lstYaml := NewList("1", "", "2")
 //	var lst []string
-//
-//	From(lstYaml).Select(&lst, func(item string) any {
+//	lstYaml.Select(&lst, func(item string) any {
 //	    return "go:" + item
 //	})
+//	result: lst = []string { "go:1", "go:", "go:2" }
 //
-//	result:
-//	lst = []string { "go:1", "go:", "go:2" }
-func (receiver enumerable[T]) Select(arrSlice any, fn func(item T) any) {
-	arrVal := reflect.ValueOf(arrSlice).Elem()
-	if arrVal.Kind() != reflect.Slice {
-		panic("arr入参必须为切片类型")
+//	var lstSelect List[string]
+//	lstYaml.Select(&lstSelect, func(item string) any {
+//		return "go:" + item
+//	})
+//	result: lstSelect = List[string] { "go:1", "go:", "go:2" }
+func (receiver enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
+	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
+	// 切片类型
+	if sliceOrListVal.Kind() == reflect.Slice {
+		var lst = make([]reflect.Value, 0)
+		for _, item := range *receiver.source {
+			lst = append(lst, reflect.ValueOf(fn(item)))
+		}
+
+		value := reflect.Append(sliceOrListVal, lst...)
+		sliceOrListVal.Set(value)
+		return
+	}
+	if strings.HasPrefix(sliceOrListVal.Type().String(), "collections.List[") {
+		// 初始化
+		value := reflect.New(sliceOrListVal.Type())
+		value.MethodByName("New").Call(nil)
+
+		for _, item := range *receiver.source {
+			itemValue := reflect.ValueOf(fn(item))
+			value.MethodByName("Add").Call([]reflect.Value{itemValue})
+		}
+		sliceOrListVal.Set(value.Elem())
+		return
 	}
 
-	// 定义反射类型的切片
-	var lst = make([]reflect.Value, 0)
-	for _, item := range *receiver.source {
-		lst = append(lst, reflect.ValueOf(fn(item)))
-	}
-
-	value := reflect.Append(arrVal, lst...)
-	arrVal.Set(value)
+	panic("sliceOrList入参必须为切片或collections.List类型")
 }
 
 // SelectMany 筛选子元素字段
@@ -366,29 +382,50 @@ func (receiver enumerable[T]) Select(arrSlice any, fn func(item T) any) {
 // eg:
 //
 //	lstYaml := NewList([]string{"1", "2"}, []string{"3", "4"})
-//	var lst []string
-//	From(lstYaml).SelectMany(&lst, func(item []string) any {
+//	var arr []string
+//	lstYaml.SelectMany(&arr, func(item []string) any {
 //		return item
 //	})
+//	// result:	arr = []string { "1", "2", "3", "4" }
 //
-//	result:
-//	lst = []string { "1", "2", "3", "4" }
-func (receiver enumerable[T]) SelectMany(arrSlice any, fn func(item T) any) {
-	arrVal := reflect.ValueOf(arrSlice).Elem()
-	if arrVal.Kind() != reflect.Slice {
-		panic("arrSlice入参必须为切片类型")
+//	var lst2 List[string]
+//	lst.SelectMany(&lst2, func(item []string) any {
+//		return item
+//	})
+//	// result:	lst = List[string] { "1", "2", "3", "4" }
+func (receiver enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
+	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
+
+	// 切片类型
+	if sliceOrListVal.Kind() == reflect.Slice {
+		value := reflect.MakeSlice(sliceOrListVal.Type(), 0, 0)
+		for _, item := range *receiver.source {
+			itemValue := reflect.ValueOf(fn(item))
+			if itemValue.Type() != sliceOrListVal.Type() {
+				panic("arrSlice入参类型必须与fn返回的类型一致")
+			}
+			value = reflect.AppendSlice(value, itemValue)
+		}
+		sliceOrListVal.Set(value)
+		return
 	}
 
-	// 定义反射类型的切片
-	value := reflect.MakeSlice(arrVal.Type(), 0, 0)
-	for _, item := range *receiver.source {
-		returnValue := reflect.ValueOf(fn(item))
-		if returnValue.Type() != arrVal.Type() {
-			panic("arrSlice入参类型必须与fn返回的类型一致")
+	if strings.HasPrefix(sliceOrListVal.Type().String(), "collections.List[") {
+		// 初始化
+		value := reflect.New(sliceOrListVal.Type())
+		value.MethodByName("New").Call(nil)
+
+		for _, item := range *receiver.source {
+			itemValue := reflect.ValueOf(fn(item))
+			for i := 0; i < itemValue.Len(); i++ {
+				value.MethodByName("Add").Call([]reflect.Value{itemValue.Index(i)})
+			}
 		}
-		value = reflect.AppendSlice(value, returnValue)
+		sliceOrListVal.Set(value.Elem())
+		return
 	}
-	arrVal.Set(value)
+
+	panic("sliceOrList入参必须为切片或collections.List类型")
 }
 
 // ToMap 转成字典

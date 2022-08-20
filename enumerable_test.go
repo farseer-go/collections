@@ -221,10 +221,21 @@ func Test_enumerable_Select(t *testing.T) {
 	for index, yaml := range lst.ToArray() {
 		assert.Equal(t, arr[index], "go:"+yaml)
 	}
+
+	var lstSelect List[string]
+	lst.Select(&lstSelect, func(item string) any {
+		return "go:" + item
+	})
+
+	assert.Equal(t, lstSelect.Count(), lst.Count())
+	for index, yaml := range lst.ToArray() {
+		assert.Equal(t, lstSelect.Index(index), "go:"+yaml)
+	}
 }
 
 func Test_enumerable_SelectMany(t *testing.T) {
 	lst := NewList([]string{"1", "2"}, []string{"3", "4"})
+
 	var arr []string
 	lst.SelectMany(&arr, func(item []string) any {
 		return item
@@ -235,6 +246,17 @@ func Test_enumerable_SelectMany(t *testing.T) {
 	assert.Equal(t, arr[1], "2")
 	assert.Equal(t, arr[2], "3")
 	assert.Equal(t, arr[3], "4")
+
+	var lst2 List[string]
+	lst.SelectMany(&lst2, func(item []string) any {
+		return item
+	})
+
+	assert.Equal(t, lst2.Count(), 4)
+	assert.Equal(t, lst2.Index(0), "1")
+	assert.Equal(t, lst2.Index(1), "2")
+	assert.Equal(t, lst2.Index(2), "3")
+	assert.Equal(t, lst2.Index(3), "4")
 }
 
 func Test_enumerable_ToMap(t *testing.T) {
