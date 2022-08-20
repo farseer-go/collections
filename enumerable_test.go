@@ -395,7 +395,7 @@ func Test_enumerable_MapToListAny(t *testing.T) {
 		Age  int
 	}
 	lst := NewList(po{Name: "steden", Age: 36}, po{Name: "steden", Age: 18}, po{Name: "steden2", Age: 40})
-	listAny := lst.MapToListAny()
+	listAny := lst.ToListAny()
 
 	assert.Equal(t, lst.Count(), listAny.Count())
 

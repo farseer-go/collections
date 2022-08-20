@@ -522,8 +522,8 @@ func (receiver enumerable[T]) MapToList(toList any) {
 	reflect.ValueOf(toList).Elem().Set(newValue.Elem())
 }
 
-// MapToListAny 转成ListAny
-func (receiver enumerable[T]) MapToListAny() ListAny {
+// ToListAny 转成ListAny
+func (receiver enumerable[T]) ToListAny() ListAny {
 	array := receiver.ToArray()
 	lst := NewListAny()
 	for _, item := range array {

@@ -51,7 +51,7 @@ Support for List collections and linq syntax
       * ToArray（转成数组）
       * ToPageList（数组分页）
       * MapToList（类型转换）
-      * MapToListAny（转成ListAny）
+      * ToListAny（转成ListAny）
       * MapToArray（类型转换）
       * Concat（合并两个集合）
       * Union（合并两个集合，并去重）
@@ -296,12 +296,12 @@ var lstDO []do
 lst.MapToArray(&lstDO) // lstDO[0].Name = "steden"   lstDO[0].Age = 37
 ```
 
-## MapToListAny
+## ToListAny
 ```go
 type po struct {
     Name string
     Age  int
 }
 lst := NewList(po{Name: "steden", Age: 36}, po{Name: "steden", Age: 18}, po{Name: "steden2", Age: 40})
-lst.MapToListAny()  // return collections.ListAny
+lst.ToListAny()  // return collections.ListAny
 ```
