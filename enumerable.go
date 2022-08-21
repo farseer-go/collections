@@ -497,6 +497,16 @@ func (receiver enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T
 	return pageList
 }
 
+// ToListAny 转成ListAny
+func (receiver enumerable[T]) ToListAny() ListAny {
+	array := receiver.ToArray()
+	lst := NewListAny()
+	for _, item := range array {
+		lst.Add(item)
+	}
+	return lst
+}
+
 // MapToList 类型转换，比如List[PO] 转换为 List[DO]
 // toList：必须为List类型
 func (receiver enumerable[T]) MapToList(toList any) {
@@ -520,16 +530,6 @@ func (receiver enumerable[T]) MapToList(toList any) {
 	// 将数组添加到集合
 	newValue.MethodByName("Add").CallSlice([]reflect.Value{reflect.ValueOf(destArr).Elem()})
 	reflect.ValueOf(toList).Elem().Set(newValue.Elem())
-}
-
-// ToListAny 转成ListAny
-func (receiver enumerable[T]) ToListAny() ListAny {
-	array := receiver.ToArray()
-	lst := NewListAny()
-	for _, item := range array {
-		lst.Add(item)
-	}
-	return lst
 }
 
 // MapToArray 类型转换，比如List[PO] 转换为 []DO
