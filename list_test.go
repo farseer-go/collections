@@ -13,8 +13,8 @@ func TestList_Source(t *testing.T) {
 		Distinct().Skip(1).Take(3).Contains(6)
 
 	fmt.Println(lst.source)
-	fmt.Println(lst.enumerable.source)
-	fmt.Println(lst.collection.source)
-	fmt.Println(lst.list.source)
+	fmt.Println(lst.Enumerable.source)
+	fmt.Println(lst.Collection.source)
+	fmt.Println(lst.IList.source)
 
 }

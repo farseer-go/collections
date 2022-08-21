@@ -19,19 +19,19 @@ Support for List collections and linq syntax
       * ContainsValue（是否存在指定的Value）
     * List（泛型集合）
       * AsEnumerable（返回enumerable类型）
-    * list
+    * IList
       * Index（获取第index索引位置的元素）
       * IndexOf（元素在集合的索引位置）
       * Insert（向第index索引位置插入元素）
       * RemoveAt（移除指定索引的元素）
       * Set（设置值）
-    * collection
+    * Collection
       * Count（集合大小）
       * Add（添加元素）
       * Clear（清空集合）
       * Remove（移除元素）
       * RemoveAll（移除条件=true的元素）
-    * enumerable
+    * Enumerable
       * Any（是否存在）
       * IsEmpty（集合是为空的）
       * First（查找符合条件的第一个元素）
@@ -70,6 +70,8 @@ Support for List collections and linq syntax
       * Distinct（集合去重）
       * Empty（返回一个新的Empty集合）
       * Except（移除参数中包含的集合元素）
+      * Range（获取切片范围）
+      * RangeStart（获取切片开始位置起的范围）
     * func
       * NewList（创建集合）
       * NewPageList （数据分页列表及总数）

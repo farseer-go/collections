@@ -7,22 +7,22 @@ import (
 	"strings"
 )
 
-type enumerable[T any] struct {
+type Enumerable[T any] struct {
 	source *[]T
 }
 
 // Any 是否存在
-func (receiver enumerable[T]) Any() bool {
+func (receiver Enumerable[T]) Any() bool {
 	return len(*receiver.source) > 0
 }
 
 // IsEmpty 集合是为空的
-func (receiver enumerable[T]) IsEmpty() bool {
+func (receiver Enumerable[T]) IsEmpty() bool {
 	return receiver.source == nil || len(*receiver.source) == 0
 }
 
 // First 查找符合条件的第一个元素
-func (receiver enumerable[T]) First() T {
+func (receiver Enumerable[T]) First() T {
 	if len(*receiver.source) > 0 {
 		return (*receiver.source)[0]
 	}
@@ -31,7 +31,7 @@ func (receiver enumerable[T]) First() T {
 }
 
 // Last 集合最后一个元素
-func (receiver enumerable[T]) Last() T {
+func (receiver Enumerable[T]) Last() T {
 	if len(*receiver.source) > 0 {
 		return (*receiver.source)[len(*receiver.source)-1]
 	}
@@ -40,12 +40,12 @@ func (receiver enumerable[T]) Last() T {
 }
 
 // Count 集合大小
-func (receiver enumerable[T]) Count() int {
+func (receiver Enumerable[T]) Count() int {
 	return len(*receiver.source)
 }
 
 // Contains 是否包含元素
-func (receiver enumerable[T]) Contains(item T) bool {
+func (receiver Enumerable[T]) Contains(item T) bool {
 	itemValue := reflect.ValueOf(item)
 	for _, t := range *receiver.source {
 		if reflect.ValueOf(t) == itemValue {
@@ -56,18 +56,18 @@ func (receiver enumerable[T]) Contains(item T) bool {
 }
 
 // Where 对数据进行筛选
-func (receiver enumerable[T]) Where(fn func(item T) bool) enumerable[T] {
+func (receiver Enumerable[T]) Where(fn func(item T) bool) Enumerable[T] {
 	var lst []T
 	for _, item := range *receiver.source {
 		if fn(item) {
 			lst = append(lst, item)
 		}
 	}
-	return enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst}
 }
 
 // All 是否所有数据都满足fn条件
-func (receiver enumerable[T]) All(fn func(item T) bool) bool {
+func (receiver Enumerable[T]) All(fn func(item T) bool) bool {
 	for _, item := range *receiver.source {
 		if !fn(item) {
 			return false
@@ -77,29 +77,29 @@ func (receiver enumerable[T]) All(fn func(item T) bool) bool {
 }
 
 // Take 返回前多少条数据
-func (receiver enumerable[T]) Take(count int) enumerable[T] {
+func (receiver Enumerable[T]) Take(count int) Enumerable[T] {
 	recordCount := len(*receiver.source)
 	// 总长度比count小，则直接返回全部数据
 	if recordCount < count {
 		return receiver
 	}
 	arr := (*receiver.source)[0:count]
-	return enumerable[T]{source: &arr}
+	return Enumerable[T]{source: &arr}
 }
 
 // Skip 跳过前多少条记录
-func (receiver enumerable[T]) Skip(count int) enumerable[T] {
+func (receiver Enumerable[T]) Skip(count int) Enumerable[T] {
 	recordCount := len(*receiver.source)
 	// 总长度比count小，则返回空数据
 	if recordCount < count {
-		return enumerable[T]{source: new([]T)}
+		return Enumerable[T]{source: new([]T)}
 	}
 	arr := (*receiver.source)[count:]
-	return enumerable[T]{source: &arr}
+	return Enumerable[T]{source: &arr}
 }
 
 // Sum 求总和
-func (receiver enumerable[T]) Sum(fn func(item T) any) any {
+func (receiver Enumerable[T]) Sum(fn func(item T) any) any {
 	lst := *receiver.source
 	var sum any
 	for index := 0; index < len(lst); index++ {
@@ -109,7 +109,7 @@ func (receiver enumerable[T]) Sum(fn func(item T) any) any {
 }
 
 // SumItem 求总和
-func (receiver enumerable[T]) SumItem() T {
+func (receiver Enumerable[T]) SumItem() T {
 	lst := *receiver.source
 	var sum T
 	for index := 0; index < len(lst); index++ {
@@ -119,21 +119,21 @@ func (receiver enumerable[T]) SumItem() T {
 }
 
 // Average 求平均数
-func (receiver enumerable[T]) Average(fn func(item T) any) float64 {
+func (receiver Enumerable[T]) Average(fn func(item T) any) float64 {
 	sum := receiver.Sum(fn)
 	count := len(*receiver.source)
 	return parse.Convert(sum, float64(0)) / parse.Convert(count, float64(0))
 }
 
 // AverageItem 求平均数
-func (receiver enumerable[T]) AverageItem() float64 {
+func (receiver Enumerable[T]) AverageItem() float64 {
 	sum := receiver.Sum(func(item T) any { return item })
 	count := len(*receiver.source)
 	return parse.Convert(sum, float64(0)) / parse.Convert(count, float64(0))
 }
 
 // Min 获取最小值
-func (receiver enumerable[T]) Min(fn func(item T) any) any {
+func (receiver Enumerable[T]) Min(fn func(item T) any) any {
 	lst := *receiver.source
 
 	minValue := fn(lst[0])
@@ -147,7 +147,7 @@ func (receiver enumerable[T]) Min(fn func(item T) any) any {
 }
 
 // MinItem 获取最小值
-func (receiver enumerable[T]) MinItem() T {
+func (receiver Enumerable[T]) MinItem() T {
 	lst := *receiver.source
 
 	minValue := lst[0]
@@ -161,7 +161,7 @@ func (receiver enumerable[T]) MinItem() T {
 }
 
 // Max 获取最大值
-func (receiver enumerable[T]) Max(fn func(item T) any) any {
+func (receiver Enumerable[T]) Max(fn func(item T) any) any {
 	lst := *receiver.source
 
 	maxValue := fn(lst[0])
@@ -175,7 +175,7 @@ func (receiver enumerable[T]) Max(fn func(item T) any) any {
 }
 
 // MaxItem 获取最大值
-func (receiver enumerable[T]) MaxItem() T {
+func (receiver Enumerable[T]) MaxItem() T {
 	lst := *receiver.source
 
 	maxValue := lst[0]
@@ -189,7 +189,7 @@ func (receiver enumerable[T]) MaxItem() T {
 }
 
 // GroupBy 将数组进行分组后返回map
-func (receiver enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) any) {
+func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) any) {
 	mapSliceVal := reflect.ValueOf(mapSlice).Elem()
 	if mapSliceVal.Kind() != reflect.Map {
 		panic("mapSlice入参必须为map类型")
@@ -214,7 +214,7 @@ func (receiver enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 }
 
 // OrderBy 正序排序，fn 返回的是要排序的字段的值
-func (receiver enumerable[T]) OrderBy(fn func(item T) any) enumerable[T] {
+func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
 	lst := *receiver.source
 
 	// 首先拿数组第0个出来做为左边值
@@ -239,11 +239,11 @@ func (receiver enumerable[T]) OrderBy(fn func(item T) any) enumerable[T] {
 		}
 	}
 
-	return enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst}
 }
 
 // OrderByItem 正序排序，fn 返回的是要排序的字段的值
-func (receiver enumerable[T]) OrderByItem() enumerable[T] {
+func (receiver Enumerable[T]) OrderByItem() Enumerable[T] {
 	lst := *receiver.source
 
 	// 首先拿数组第0个出来做为左边值
@@ -268,11 +268,11 @@ func (receiver enumerable[T]) OrderByItem() enumerable[T] {
 		}
 	}
 
-	return enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst}
 }
 
 // OrderByDescending 倒序排序，fn 返回的是要排序的字段的值
-func (receiver enumerable[T]) OrderByDescending(fn func(item T) any) enumerable[T] {
+func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[T] {
 	lst := *receiver.source
 
 	// 首先拿数组第0个出来做为左边值
@@ -297,11 +297,11 @@ func (receiver enumerable[T]) OrderByDescending(fn func(item T) any) enumerable[
 		}
 	}
 
-	return enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst}
 }
 
 // OrderByDescendingItem 倒序排序，fn 返回的是要排序的字段的值
-func (receiver enumerable[T]) OrderByDescendingItem() enumerable[T] {
+func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 	lst := *receiver.source
 
 	// 首先拿数组第0个出来做为左边值
@@ -325,7 +325,7 @@ func (receiver enumerable[T]) OrderByDescendingItem() enumerable[T] {
 			}
 		}
 	}
-	return enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst}
 }
 
 // Select 筛选子元素字段
@@ -346,7 +346,7 @@ func (receiver enumerable[T]) OrderByDescendingItem() enumerable[T] {
 //		return "go:" + item
 //	})
 //	result: lstSelect = List[string] { "go:1", "go:", "go:2" }
-func (receiver enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
+func (receiver Enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
 	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
 	// 切片类型
 	if sliceOrListVal.Kind() == reflect.Slice {
@@ -393,7 +393,7 @@ func (receiver enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
 //		return item
 //	})
 //	// result:	lst = List[string] { "1", "2", "3", "4" }
-func (receiver enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
+func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
 
 	// 切片类型
@@ -440,14 +440,14 @@ func (receiver enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 //	var lst2 List[string]
 //	lst.SelectMany(&lst2)
 //	// result:	lst = List[string] { "1", "2", "3", "4" }
-func (receiver enumerable[T]) SelectManyItem(sliceOrList any) {
+func (receiver Enumerable[T]) SelectManyItem(sliceOrList any) {
 	receiver.SelectMany(sliceOrList, func(item T) any {
 		return item
 	})
 }
 
 // ToMap 转成字典
-func (receiver enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any, getMapValueFunc func(item T) any) {
+func (receiver Enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any, getMapValueFunc func(item T) any) {
 	mapSliceVal := reflect.ValueOf(mapSlice).Elem()
 	if mapSliceVal.Kind() != reflect.Map {
 		panic("mapSlice入参必须为map类型")
@@ -472,17 +472,17 @@ func (receiver enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any
 }
 
 // ToList 返回List集合
-func (receiver enumerable[T]) ToList() List[T] {
+func (receiver Enumerable[T]) ToList() List[T] {
 	return NewList(*receiver.source...)
 }
 
 // ToArray 转成数组
-func (receiver enumerable[T]) ToArray() []T {
+func (receiver Enumerable[T]) ToArray() []T {
 	return *receiver.source
 }
 
 // ToPageList 数组分页
-func (receiver enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T] {
+func (receiver Enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T] {
 	pageList := PageList[T]{
 		RecordCount: int64(len(*receiver.source)),
 	}
@@ -518,7 +518,7 @@ func (receiver enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T
 }
 
 // ToListAny 转成ListAny
-func (receiver enumerable[T]) ToListAny() ListAny {
+func (receiver Enumerable[T]) ToListAny() ListAny {
 	array := receiver.ToArray()
 	lst := NewListAny()
 	for _, item := range array {
@@ -529,7 +529,7 @@ func (receiver enumerable[T]) ToListAny() ListAny {
 
 // MapToList 类型转换，比如List[PO] 转换为 List[DO]
 // toList：必须为List类型
-func (receiver enumerable[T]) MapToList(toList any) {
+func (receiver Enumerable[T]) MapToList(toList any) {
 	toValue := reflect.ValueOf(toList).Elem()
 	// 传进来的，可能不是struct，而是通过反射创建的any
 	if toValue.Kind() == reflect.Ptr || toValue.Kind() == reflect.Interface {
@@ -554,7 +554,7 @@ func (receiver enumerable[T]) MapToList(toList any) {
 
 // MapToArray 类型转换，比如List[PO] 转换为 []DO
 // toSlice：必须为切片类型
-func (receiver enumerable[T]) MapToArray(toSlice any) {
+func (receiver Enumerable[T]) MapToArray(toSlice any) {
 	toValue := reflect.ValueOf(toSlice)
 	toType := toValue.Type()
 	if toType.Elem().Kind() != reflect.Slice {
@@ -567,49 +567,63 @@ func (receiver enumerable[T]) MapToArray(toSlice any) {
 }
 
 // Empty 返回一个新的Empty集合
-func (receiver enumerable[T]) Empty() enumerable[T] {
-	return enumerable[T]{source: &[]T{}}
+func (receiver Enumerable[T]) Empty() Enumerable[T] {
+	return Enumerable[T]{source: &[]T{}}
 }
 
 // Intersect 两个集合的交集（共同存在的元素）
-func (receiver enumerable[T]) Intersect(lstRight List[T]) enumerable[T] {
+func (receiver Enumerable[T]) Intersect(lstRight List[T]) Enumerable[T] {
 	var lst []T
 	for _, item := range *receiver.source {
 		if lstRight.Contains(item) {
 			lst = append(lst, item)
 		}
 	}
-	return enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst}
 }
 
 // Concat 合并两个集合
-func (receiver enumerable[T]) Concat(lstRight List[T]) enumerable[T] {
+func (receiver Enumerable[T]) Concat(lstRight List[T]) Enumerable[T] {
 	lst := append(*receiver.source, *lstRight.source...)
-	return enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst}
 }
 
 // Union 合并两个集合，并去重
-func (receiver enumerable[T]) Union(lstRight List[T]) enumerable[T] {
+func (receiver Enumerable[T]) Union(lstRight List[T]) Enumerable[T] {
 	union := receiver.Concat(lstRight)
 	return union.Distinct()
 }
 
 // Distinct 集合去重
-func (receiver enumerable[T]) Distinct() enumerable[T] {
+func (receiver Enumerable[T]) Distinct() Enumerable[T] {
 	lst := NewList[T]()
 	for _, item := range *receiver.source {
 		if !lst.Contains(item) {
 			lst.Add(item)
 		}
 	}
-	return lst.enumerable
+	return lst.Enumerable
 }
 
 // Except 移除参数中包含的集合元素
-func (receiver enumerable[T]) Except(lstRight List[T]) enumerable[T] {
+func (receiver Enumerable[T]) Except(lstRight List[T]) Enumerable[T] {
 	lst := receiver.ToList()
 	for _, item := range *lstRight.source {
 		lst.Remove(item)
 	}
-	return lst.enumerable
+	return lst.Enumerable
+}
+
+// Range 获取切片范围
+// startIndex：起始位置
+// length：从startIndex开始之后的长度
+func (receiver Enumerable[T]) Range(startIndex int, length int) Enumerable[T] {
+	*receiver.source = (*receiver.source)[startIndex : startIndex+length]
+	return receiver
+}
+
+// RangeStart 获取切片范围（指定startIndex，不指定endIndex)
+func (receiver Enumerable[T]) RangeStart(startIndex int) Enumerable[T] {
+	*receiver.source = (*receiver.source)[startIndex:]
+	return receiver
 }
