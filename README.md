@@ -60,9 +60,21 @@ Support for List collections and linq syntax
       * Except（移除参数中包含的集合元素）
     * List（泛型集合）
       * AsEnumerable（返回enumerable类型）
+    * Dictionary（字典）
+      * Values（获取字典的value）
+      * Keys（获取字典的Keys）
+      * Count（获取字典数量）
+      * Add（添加元素）
+      * AddMap（添加元素）
+      * Clear（清除元素）
+      * Remove（移除元素）
+      * ContainsKey（是否存在KEY）
+      * ContainsValue（是否存在指定的Value）
     * func
       * NewList（创建集合）
       * NewPageList （数据分页列表及总数）
+      * NewDictionary （创建一个字典）
+      * NewDictionaryFromMap （创建一个字典）
 
 ## Getting Started
 ```go

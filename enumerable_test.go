@@ -259,6 +259,28 @@ func Test_enumerable_SelectMany(t *testing.T) {
 	assert.Equal(t, lst2.Index(3), "4")
 }
 
+func Test_enumerable_SelectManyItem(t *testing.T) {
+	lst := NewList([]string{"1", "2"}, []string{"3", "4"})
+
+	var arr []string
+	lst.SelectManyItem(&arr)
+
+	assert.Equal(t, len(arr), 4)
+	assert.Equal(t, arr[0], "1")
+	assert.Equal(t, arr[1], "2")
+	assert.Equal(t, arr[2], "3")
+	assert.Equal(t, arr[3], "4")
+
+	var lst2 List[string]
+	lst.SelectManyItem(&lst2)
+
+	assert.Equal(t, lst2.Count(), 4)
+	assert.Equal(t, lst2.Index(0), "1")
+	assert.Equal(t, lst2.Index(1), "2")
+	assert.Equal(t, lst2.Index(2), "3")
+	assert.Equal(t, lst2.Index(3), "4")
+}
+
 func Test_enumerable_ToMap(t *testing.T) {
 	type testItem struct {
 		name string

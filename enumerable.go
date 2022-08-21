@@ -426,6 +426,26 @@ func (receiver enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 	panic("sliceOrList入参必须为切片或collections.List类型")
 }
 
+// SelectManyItem 筛选子元素字段
+//
+// arrSlice：切片数组类型
+//
+// eg:
+//
+//	lstYaml := NewList([]string{"1", "2"}, []string{"3", "4"})
+//	var arr []string
+//	lstYaml.SelectMany(&arr)
+//	// result:	arr = []string { "1", "2", "3", "4" }
+//
+//	var lst2 List[string]
+//	lst.SelectMany(&lst2)
+//	// result:	lst = List[string] { "1", "2", "3", "4" }
+func (receiver enumerable[T]) SelectManyItem(sliceOrList any) {
+	receiver.SelectMany(sliceOrList, func(item T) any {
+		return item
+	})
+}
+
 // ToMap 转成字典
 func (receiver enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any, getMapValueFunc func(item T) any) {
 	mapSliceVal := reflect.ValueOf(mapSlice).Elem()
