@@ -7,6 +7,18 @@ Support for List collections and linq syntax
   * struct
     * PageList （用于分页数组，包含总记录数）
       * MapToPageList（类型转换，如PageList[PO]转PageList[DO]）
+    * Dictionary（字典）
+      * Values（获取字典的value）
+      * Keys（获取字典的Keys）
+      * Count（获取字典数量）
+      * Add（添加元素）
+      * AddMap（添加元素）
+      * Clear（清除元素）
+      * Remove（移除元素）
+      * ContainsKey（是否存在KEY）
+      * ContainsValue（是否存在指定的Value）
+    * List（泛型集合）
+      * AsEnumerable（返回enumerable类型）
     * list
       * Index（获取第index索引位置的元素）
       * IndexOf（元素在集合的索引位置）
@@ -58,18 +70,6 @@ Support for List collections and linq syntax
       * Distinct（集合去重）
       * Empty（返回一个新的Empty集合）
       * Except（移除参数中包含的集合元素）
-    * List（泛型集合）
-      * AsEnumerable（返回enumerable类型）
-    * Dictionary（字典）
-      * Values（获取字典的value）
-      * Keys（获取字典的Keys）
-      * Count（获取字典数量）
-      * Add（添加元素）
-      * AddMap（添加元素）
-      * Clear（清除元素）
-      * Remove（移除元素）
-      * ContainsKey（是否存在KEY）
-      * ContainsValue（是否存在指定的Value）
     * func
       * NewList（创建集合）
       * NewPageList （数据分页列表及总数）
@@ -316,4 +316,21 @@ type po struct {
 }
 lst := NewList(po{Name: "steden", Age: 36}, po{Name: "steden", Age: 18}, po{Name: "steden2", Age: 40})
 lst.ToListAny()  // return collections.ListAny
+```
+
+## Dictionary
+```go
+maps := make(map[string]string)
+maps["name"] = "steden"
+maps["age"] = "18"
+dic := collections.NewDictionaryFromMap(maps)   // dic: ["name"] = "steden"，["age"] = "18"
+dic.Keys()                                      // collections.List[string]: "name"、"age"
+dic.Values()                                    // collections.List[string]: "steden"、"18"
+dic.Count()                                     // return 2
+dic.GetValue("name")                            // return "steden"
+dic.Remove("name")                              // remove key name
+dic.Add("name", "steden")                       // add key=name,value=steden
+dic.ContainsKey("name")                         // return true
+dic.ContainsValue("steden")                     // return true
+dic.Clear()                                     // clear all item
 ```
