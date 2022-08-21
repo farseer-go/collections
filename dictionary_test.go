@@ -82,3 +82,15 @@ func Test_dictionary_ContainsValue(t *testing.T) {
 	dic.Add("name", "steden")
 	assert.Equal(t, true, dic.ContainsValue("steden"))
 }
+
+func TestDictionary_ToMap(t *testing.T) {
+	maps := make(map[string]string)
+	maps["name"] = "steden"
+	maps["age"] = "18"
+	dic := NewDictionaryFromMap[string, string](maps)
+	tomap := dic.ToMap()
+
+	assert.Equal(t, len(maps), len(tomap))
+	assert.Equal(t, maps["name"], tomap["name"])
+	assert.Equal(t, maps["age"], tomap["age"])
+}

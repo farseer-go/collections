@@ -96,3 +96,8 @@ func (receiver Dictionary[TKey, TValue]) ContainsValue(value TValue) bool {
 func (receiver Dictionary[TKey, TValue]) GetValue(key TKey) TValue {
 	return receiver.source[key]
 }
+
+// ToMap 转成map对象
+func (receiver Dictionary[TKey, TValue]) ToMap() map[TKey]TValue {
+	return receiver.source
+}

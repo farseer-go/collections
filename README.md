@@ -333,4 +333,5 @@ dic.Add("name", "steden")                       // add key=name,value=steden
 dic.ContainsKey("name")                         // return true
 dic.ContainsValue("steden")                     // return true
 dic.Clear()                                     // clear all item
+dic.ToMap()                                     // mapTo map
 ```
