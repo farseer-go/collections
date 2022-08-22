@@ -1,6 +1,8 @@
 package collections
 
-import "reflect"
+import (
+	"github.com/farseer-go/fs/parse"
+)
 
 type IList[T any] struct {
 	source *[]T
@@ -19,9 +21,8 @@ func (receiver *IList[T]) Set(index int, item T) {
 
 // IndexOf 元素在集合的索引位置
 func (receiver *IList[T]) IndexOf(item T) int {
-	itemValue := reflect.ValueOf(item)
 	for index, t := range *receiver.source {
-		if reflect.ValueOf(t) == itemValue {
+		if parse.IsEqual(t, item) {
 			return index
 		}
 	}

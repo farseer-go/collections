@@ -16,14 +16,14 @@ func Test_dictionary_Values(t *testing.T) {
 }
 
 func Test_dictionary_Keys(t *testing.T) {
-
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
 	dic := NewDictionaryFromMap[string, string](maps)
-	array := dic.Keys().ToArray()
-	assert.Equal(t, array[0], "name")
-	assert.Equal(t, array[1], "age")
+	lst := dic.Keys()
+	assert.Equal(t, 2, lst.Count())
+	assert.True(t, lst.Contains("name"))
+	assert.True(t, lst.Contains("age"))
 }
 
 func Test_dictionary_Count(t *testing.T) {

@@ -327,10 +327,17 @@ func Test_enumerable_MapToList(t *testing.T) {
 	var lstDO List[do]
 	lst.MapToList(&lstDO)
 
-	assert.Equal(t, lstDO.Count(), 1)
+	assert.Equal(t, 1, lstDO.Count())
+	assert.Equal(t, "steden", lstDO.First().Name)
+	assert.Equal(t, 37, lstDO.First().Age)
 
-	assert.Equal(t, lstDO.First().Name, "steden")
-	assert.Equal(t, lstDO.First().Age, 37)
+	lstAny := NewListAny(1, 2)
+	var lstInt List[int]
+	lstAny.MapToList(&lstInt)
+
+	assert.Equal(t, lstAny.Count(), lstInt.Count())
+	assert.Equal(t, lstAny.Index(0), lstInt.Index(0))
+	assert.Equal(t, lstAny.Index(1), lstInt.Index(1))
 }
 
 func Test_enumerable_MapToArray(t *testing.T) {
@@ -347,10 +354,17 @@ func Test_enumerable_MapToArray(t *testing.T) {
 	var lstDO []do
 	lst.MapToArray(&lstDO)
 
-	assert.Equal(t, len(lstDO), 1)
+	assert.Equal(t, 1, len(lstDO))
+	assert.Equal(t, "steden", lstDO[0].Name)
+	assert.Equal(t, 37, lstDO[0].Age)
 
-	assert.Equal(t, lstDO[0].Name, "steden")
-	assert.Equal(t, lstDO[0].Age, 37)
+	lstAny := NewListAny(1, 2)
+	var arrInt []int
+	lstAny.MapToArray(&arrInt)
+
+	assert.Equal(t, lstAny.Count(), len(arrInt))
+	assert.Equal(t, lstAny.Index(0), arrInt[0])
+	assert.Equal(t, lstAny.Index(1), arrInt[1])
 }
 
 func Test_enumerable_Intersect(t *testing.T) {

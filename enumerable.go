@@ -46,9 +46,8 @@ func (receiver Enumerable[T]) Count() int {
 
 // Contains 是否包含元素
 func (receiver Enumerable[T]) Contains(item T) bool {
-	itemValue := reflect.ValueOf(item)
 	for _, t := range *receiver.source {
-		if reflect.ValueOf(t) == itemValue {
+		if parse.IsEqual(t, item) {
 			return true
 		}
 	}
@@ -350,23 +349,19 @@ func (receiver Enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
 	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
 	// 切片类型
 	if sliceOrListVal.Kind() == reflect.Slice {
-		var lst = make([]reflect.Value, 0)
+		value := reflect.MakeSlice(sliceOrListVal.Type(), 0, 0)
 		for _, item := range *receiver.source {
-			lst = append(lst, reflect.ValueOf(fn(item)))
+			value = reflect.Append(value, reflect.ValueOf(fn(item)))
 		}
-
-		value := reflect.Append(sliceOrListVal, lst...)
 		sliceOrListVal.Set(value)
 		return
 	}
-	if strings.HasPrefix(sliceOrListVal.Type().String(), "collections.List[") {
+	if ReflectIsList(sliceOrListVal.Type()) {
 		// 初始化
-		value := reflect.New(sliceOrListVal.Type())
-		value.MethodByName("New").Call(nil)
+		value := ReflectNew(sliceOrListVal.Type())
 
 		for _, item := range *receiver.source {
-			itemValue := reflect.ValueOf(fn(item))
-			value.MethodByName("Add").Call([]reflect.Value{itemValue})
+			ReflectAdd(&value, fn(item))
 		}
 		sliceOrListVal.Set(value.Elem())
 		return
@@ -397,11 +392,12 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
 
 	// 切片类型
+	sliceOrListType := sliceOrListVal.Type()
 	if sliceOrListVal.Kind() == reflect.Slice {
-		value := reflect.MakeSlice(sliceOrListVal.Type(), 0, 0)
+		value := reflect.MakeSlice(sliceOrListType, 0, 0)
 		for _, item := range *receiver.source {
 			itemValue := reflect.ValueOf(fn(item))
-			if itemValue.Type() != sliceOrListVal.Type() {
+			if itemValue.Type() != sliceOrListType {
 				panic("arrSlice入参类型必须与fn返回的类型一致")
 			}
 			value = reflect.AppendSlice(value, itemValue)
@@ -409,15 +405,12 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 		sliceOrListVal.Set(value)
 		return
 	}
-
-	if strings.HasPrefix(sliceOrListVal.Type().String(), "collections.List[") {
+	if ReflectIsList(sliceOrListType) {
 		// 初始化
-		value := reflect.New(sliceOrListVal.Type())
-		value.MethodByName("New").Call(nil)
+		value := ReflectNew(sliceOrListType)
 
 		for _, item := range *receiver.source {
-			itemValue := reflect.ValueOf(fn(item))
-			value.MethodByName("Add").CallSlice([]reflect.Value{itemValue})
+			ReflectAdd(&value, fn(item))
 		}
 		sliceOrListVal.Set(value.Elem())
 		return
@@ -535,35 +528,52 @@ func (receiver Enumerable[T]) MapToList(toList any) {
 	if toValue.Kind() == reflect.Ptr || toValue.Kind() == reflect.Interface {
 		toValue = toValue.Elem()
 	}
-	if !strings.HasPrefix(toValue.Type().String(), "collections.List[") {
+	toType := toValue.Type()
+	if !strings.HasPrefix(toType.String(), "collections.List[") {
 		panic("要转换的类型，必须也是collections.List集合")
 	}
 
 	// 拿到数组类型后，先mapper到数组
-	destToArrayType := toValue.MethodByName("ToArray").Type().Out(0)
-	destArr := reflect.New(destToArrayType).Interface()
-	_ = mapper.MapperSlice(receiver.ToArray(), destArr)
+	destToArrayType := ReflectItemArrayType(toType)
 
-	newValue := reflect.New(toValue.Type())
+	// 只有结构数组，才能用mapper进行转换
+	destArr := reflect.New(destToArrayType).Interface()
 	// 初始化集合
-	newValue.MethodByName("New").Call(nil)
-	// 将数组添加到集合
-	newValue.MethodByName("Add").CallSlice([]reflect.Value{reflect.ValueOf(destArr).Elem()})
+	newValue := ReflectNew(toType)
+	if destToArrayType.Elem().Kind() == reflect.Struct {
+		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
+		// 将数组添加到集合
+		ReflectAdd(&newValue, destArr)
+	} else {
+		for _, item := range *receiver.source {
+			ReflectAdd(&newValue, item)
+		}
+	}
 	reflect.ValueOf(toList).Elem().Set(newValue.Elem())
 }
 
 // MapToArray 类型转换，比如List[PO] 转换为 []DO
 // toSlice：必须为切片类型
 func (receiver Enumerable[T]) MapToArray(toSlice any) {
-	toValue := reflect.ValueOf(toSlice)
-	toType := toValue.Type()
-	if toType.Elem().Kind() != reflect.Slice {
+	toSliceValue := reflect.ValueOf(toSlice).Elem()
+	toSliceType := toSliceValue.Type()
+	if toSliceType.Kind() != reflect.Slice {
 		panic("要转换的类型，必须是切片类型")
 	}
-	destArr := reflect.New(toType.Elem()).Interface()
-	_ = mapper.MapperSlice(receiver.ToArray(), destArr)
 
-	toValue.Elem().Set(reflect.ValueOf(destArr).Elem())
+	destArr := reflect.New(toSliceType).Interface()
+
+	// 只有结构数组，才能用mapper进行转换
+	if toSliceType.Elem().Kind() == reflect.Struct {
+		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
+		toSliceValue.Set(reflect.ValueOf(destArr).Elem())
+	} else {
+		value := reflect.MakeSlice(toSliceType, 0, 0)
+		for _, item := range *receiver.source {
+			value = reflect.Append(value, reflect.ValueOf(item))
+		}
+		toSliceValue.Set(value)
+	}
 }
 
 // Empty 返回一个新的Empty集合

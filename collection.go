@@ -1,6 +1,8 @@
 package collections
 
-import "reflect"
+import (
+	"github.com/farseer-go/fs/parse"
+)
 
 type Collection[T any] struct {
 	source *[]T
@@ -26,9 +28,8 @@ func (receiver *Collection[T]) Clear() {
 
 // Remove 移除元素
 func (receiver *Collection[T]) Remove(item T) {
-	itemValue := reflect.ValueOf(item)
 	for i := 0; i < len(*receiver.source); i++ {
-		if reflect.ValueOf((*receiver.source)[i]) == itemValue {
+		if parse.IsEqual((*receiver.source)[i], item) {
 			*receiver.source = append((*receiver.source)[:i], (*receiver.source)[i+1:]...)
 			i--
 		}
