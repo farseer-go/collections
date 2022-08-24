@@ -445,14 +445,17 @@ func Test_enumerable_MapToListAny(t *testing.T) {
 func Test_enumerable_Range(t *testing.T) {
 	lst1 := NewList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 	lstCut := lst1.Range(3, 2)
+	assert.Equal(t, 10, lst1.Count())
 	assert.Equal(t, 2, lstCut.Count())
 	assert.Equal(t, 4, lstCut.ToArray()[0])
 	assert.Equal(t, 5, lstCut.ToArray()[1])
+
 }
 
 func Test_enumerable_RangeStart(t *testing.T) {
 	lst1 := NewList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 	lstCut := lst1.RangeStart(7)
+	assert.Equal(t, 10, lst1.Count())
 	assert.Equal(t, 3, lstCut.Count())
 	assert.Equal(t, 8, lstCut.ToArray()[0])
 	assert.Equal(t, 9, lstCut.ToArray()[1])

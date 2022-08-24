@@ -135,6 +135,9 @@ func (receiver Enumerable[T]) AverageItem() float64 {
 func (receiver Enumerable[T]) Min(fn func(item T) any) any {
 	lst := *receiver.source
 
+	if len(lst) == 0 {
+		return 0
+	}
 	minValue := fn(lst[0])
 	for index := 1; index < len(lst); index++ {
 		value := fn(lst[index])
@@ -149,6 +152,10 @@ func (receiver Enumerable[T]) Min(fn func(item T) any) any {
 func (receiver Enumerable[T]) MinItem() T {
 	lst := *receiver.source
 
+	if len(lst) == 0 {
+		var t T
+		return t
+	}
 	minValue := lst[0]
 	for index := 1; index < len(lst); index++ {
 		value := lst[index]
@@ -163,6 +170,9 @@ func (receiver Enumerable[T]) MinItem() T {
 func (receiver Enumerable[T]) Max(fn func(item T) any) any {
 	lst := *receiver.source
 
+	if len(lst) == 0 {
+		return 0
+	}
 	maxValue := fn(lst[0])
 	for index := 1; index < len(lst); index++ {
 		value := fn(lst[index])
@@ -177,6 +187,10 @@ func (receiver Enumerable[T]) Max(fn func(item T) any) any {
 func (receiver Enumerable[T]) MaxItem() T {
 	lst := *receiver.source
 
+	if len(lst) == 0 {
+		var t T
+		return t
+	}
 	maxValue := lst[0]
 	for index := 1; index < len(lst); index++ {
 		value := lst[index]
@@ -628,12 +642,12 @@ func (receiver Enumerable[T]) Except(lstRight List[T]) Enumerable[T] {
 // startIndex：起始位置
 // length：从startIndex开始之后的长度
 func (receiver Enumerable[T]) Range(startIndex int, length int) Enumerable[T] {
-	*receiver.source = (*receiver.source)[startIndex : startIndex+length]
-	return receiver
+	newList := (*receiver.source)[startIndex : startIndex+length]
+	return Enumerable[T]{source: &newList}
 }
 
 // RangeStart 获取切片范围（指定startIndex，不指定endIndex)
 func (receiver Enumerable[T]) RangeStart(startIndex int) Enumerable[T] {
-	*receiver.source = (*receiver.source)[startIndex:]
-	return receiver
+	newList := (*receiver.source)[startIndex:]
+	return Enumerable[T]{source: &newList}
 }
