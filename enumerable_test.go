@@ -2,7 +2,9 @@ package collections
 
 import (
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 func Test_enumerable_Any(t *testing.T) {
@@ -460,4 +462,14 @@ func Test_enumerable_RangeStart(t *testing.T) {
 	assert.Equal(t, 8, lstCut.ToArray()[0])
 	assert.Equal(t, 9, lstCut.ToArray()[1])
 	assert.Equal(t, 10, lstCut.ToArray()[2])
+}
+
+func TestEnumerable_Rand(t *testing.T) {
+	rand.Seed(int64(time.Now().Nanosecond()))
+	for i := 0; i < 100; i++ {
+		val := NewList(1, 2, 3).Rand()
+		if val != 1 && val != 2 && val != 3 {
+			t.Error()
+		}
+	}
 }

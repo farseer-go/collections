@@ -3,6 +3,7 @@ package collections
 import (
 	"github.com/devfeel/mapper"
 	"github.com/farseer-go/fs/parse"
+	"math/rand"
 	"reflect"
 	"strings"
 )
@@ -650,4 +651,13 @@ func (receiver Enumerable[T]) Range(startIndex int, length int) Enumerable[T] {
 func (receiver Enumerable[T]) RangeStart(startIndex int) Enumerable[T] {
 	newList := (*receiver.source)[startIndex:]
 	return Enumerable[T]{source: &newList}
+}
+
+// Rand 返回随机元素
+func (receiver Enumerable[T]) Rand() T {
+	if receiver.Count() < 2 {
+		return receiver.First()
+	}
+	random := rand.Intn(receiver.Count())
+	return (*receiver.source)[random]
 }

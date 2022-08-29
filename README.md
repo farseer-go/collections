@@ -72,6 +72,7 @@ Support for List collections and linq syntax
       * Except（移除参数中包含的集合元素）
       * Range（获取切片范围）
       * RangeStart（获取切片开始位置起的范围）
+      * Rand（返回随机元素）
     * func
       * NewList（创建集合）
       * NewPageList （数据分页列表及总数）
@@ -318,6 +319,17 @@ type po struct {
 }
 lst := NewList(po{Name: "steden", Age: 36}, po{Name: "steden", Age: 18}, po{Name: "steden2", Age: 40})
 lst.ToListAny()  // return collections.ListAny
+```
+## Range
+```go
+lst1 := NewList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+lst1.Range(3, 2)    // return lstCut[0] = 4, lstCut[1] = 5
+lst1.RangeStart(7)  // return lstCut[0] = 8, lstCut[1] = 9, lstCut[2] = 10
+```
+
+## Rand
+```go
+NewList(1, 2, 3).Rand() // return 1 or 2 or 3
 ```
 
 ## Dictionary
