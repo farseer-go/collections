@@ -40,13 +40,21 @@ func Test_dictionary_Add(t *testing.T) {
 	maps["name"] = "steden"
 	maps["age"] = "18"
 	dic := NewDictionaryFromMap[string, string](maps)
-	assert.Equal(t, dic.Count(), 2)
+	assert.Equal(t, 2, dic.Count())
 	dic.Add("sex", "boy")
-	assert.Equal(t, dic.Count(), 3)
+	assert.Equal(t, 3, dic.Count())
 
-	assert.Equal(t, dic.GetValue("name"), "steden")
-	assert.Equal(t, dic.GetValue("age"), "18")
-	assert.Equal(t, dic.GetValue("sex"), "boy")
+	assert.Equal(t, "steden", dic.GetValue("name"))
+	assert.Equal(t, "18", dic.GetValue("age"))
+	assert.Equal(t, "boy", dic.GetValue("sex"))
+}
+
+func TestDictionary_AddMap(t *testing.T) {
+	dic := NewDictionary[string, int]()
+	maps := map[string]int{"age": 18}
+	dic.AddMap(maps)
+	assert.Equal(t, 1, dic.Count())
+	assert.Equal(t, 18, dic.GetValue("age"))
 }
 
 func Test_dictionary_Clear(t *testing.T) {
