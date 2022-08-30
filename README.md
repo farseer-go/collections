@@ -26,7 +26,6 @@ Support for List collections and linq syntax
       * RemoveAt（移除指定索引的元素）
       * Set（设置值）
     * Collection
-      * Count（集合大小）
       * Add（添加元素）
       * Clear（清空集合）
       * Remove（移除元素）

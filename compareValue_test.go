@@ -41,4 +41,8 @@ func TestCompareLeftGreaterThanRight(t *testing.T) {
 
 	assert.False(t, CompareLeftGreaterThanRight(float64(1), float64(5)))
 	assert.True(t, CompareLeftGreaterThanRight(float64(5), float64(1)))
+
+	assert.Panics(t, func() {
+		CompareLeftGreaterThanRight("a", "b")
+	})
 }

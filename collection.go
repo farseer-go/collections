@@ -8,11 +8,6 @@ type Collection[T any] struct {
 	source *[]T
 }
 
-// Count 集合大小
-func (receiver *Collection[T]) Count() int {
-	return len(*receiver.source)
-}
-
 // Add 添加元素
 func (receiver *Collection[T]) Add(item ...T) {
 	if item == nil || len(item) == 0 {
