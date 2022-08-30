@@ -473,3 +473,7 @@ func TestEnumerable_Rand(t *testing.T) {
 		}
 	}
 }
+
+func TestEnumerable_ToString(t *testing.T) {
+	assert.Equal(t, "1,2,3", NewList(1, 2, 3).ToString(","))
+}

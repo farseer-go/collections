@@ -661,3 +661,12 @@ func (receiver Enumerable[T]) Rand() T {
 	random := rand.Intn(receiver.Count())
 	return (*receiver.source)[random]
 }
+
+// ToString 将集合转成字符串，并用split分隔
+func (receiver Enumerable[T]) ToString(split string) string {
+	var arrStr []string
+	for _, item := range *receiver.source {
+		arrStr = append(arrStr, parse.Convert(item, ""))
+	}
+	return strings.Join(arrStr, split)
+}

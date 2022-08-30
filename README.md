@@ -73,6 +73,7 @@ Support for List collections and linq syntax
       * Range（获取切片范围）
       * RangeStart（获取切片开始位置起的范围）
       * Rand（返回随机元素）
+      * ToString（将集合转成字符串）
     * func
       * NewList（创建集合）
       * NewPageList （数据分页列表及总数）
@@ -330,6 +331,11 @@ lst1.RangeStart(7)  // return lstCut[0] = 8, lstCut[1] = 9, lstCut[2] = 10
 ## Rand
 ```go
 NewList(1, 2, 3).Rand() // return 1 or 2 or 3
+```
+
+## ToString
+```go
+NewList(1, 2, 3).ToString(",") // return "1,2,3"
 ```
 
 ## Dictionary
