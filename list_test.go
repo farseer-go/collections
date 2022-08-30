@@ -1,7 +1,6 @@
 package collections
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -14,10 +13,10 @@ func TestList_Source(t *testing.T) {
 		Where(func(item int) bool { return item >= 5 }).
 		Distinct().Skip(1).Take(3).Contains(6)
 
-	fmt.Println(lst.source)
-	fmt.Println(lst.Enumerable.source)
-	fmt.Println(lst.Collection.source)
-	fmt.Println(lst.IList.source)
+	flog.Info(lst.source)
+	flog.Info(lst.Enumerable.source)
+	flog.Info(lst.Collection.source)
+	flog.Info(lst.IList.source)
 
 }
 
