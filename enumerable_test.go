@@ -22,13 +22,19 @@ func Test_enumerable_IsEmpty(t *testing.T) {
 }
 
 func Test_enumerable_First(t *testing.T) {
-	lst := NewList[int](1, 2, 3, 4, 5, 6)
-	assert.Equal(t, lst.First(), 1)
+	lst := NewList[int]()
+	assert.Equal(t, 0, lst.First())
+
+	lst = NewList[int](1, 2, 3, 4, 5, 6)
+	assert.Equal(t, 1, lst.First())
 }
 
 func Test_enumerable_Last(t *testing.T) {
 	lst := NewList[int](1, 2, 3, 4, 5, 6)
 	assert.Equal(t, lst.Last(), 6)
+
+	lst = NewList[int]()
+	assert.Equal(t, 0, lst.Last())
 }
 
 func Test_enumerable_Contains(t *testing.T) {
@@ -56,6 +62,11 @@ func Test_enumerable_All(t *testing.T) {
 		return item == 5 || item == 6
 	})
 	assert.True(t, result)
+
+	result = lst.All(func(item int) bool {
+		return item == 1
+	})
+	assert.False(t, result)
 }
 
 func Test_enumerable_Take(t *testing.T) {
@@ -71,11 +82,14 @@ func Test_enumerable_Take(t *testing.T) {
 func Test_enumerable_Skip(t *testing.T) {
 	lst := NewList[int](1, 2, 3, 4, 5)
 	lst = lst.Skip(2).ToList()
-	assert.Equal(t, lst.Count(), 3)
+	assert.Equal(t, 3, lst.Count())
 	array := lst.ToArray()
-	assert.Equal(t, array[0], 3)
-	assert.Equal(t, array[1], 4)
-	assert.Equal(t, array[2], 5)
+	assert.Equal(t, 3, array[0])
+	assert.Equal(t, 4, array[1])
+	assert.Equal(t, 5, array[2])
+
+	lst = lst.Skip(6).ToList()
+	assert.Equal(t, 0, lst.Count())
 }
 
 func Test_enumerable_Sum(t *testing.T) {
@@ -105,32 +119,47 @@ func Test_enumerable_AverageItem(t *testing.T) {
 }
 
 func Test_enumerable_Min(t *testing.T) {
-	lst := NewList[int](1, 2, 3, 4, 5)
+	lst := NewList[int](5, 2, 4, 1, 3)
 	min := lst.Min(func(item int) any {
-		return item - 1
+		return item
+	})
+	assert.Equal(t, min, 1)
+
+	lst = NewList[int]()
+	min = lst.Min(func(item int) any {
+		return item
 	})
 	assert.Equal(t, min, 0)
 }
 
 func Test_enumerable_MinItem(t *testing.T) {
-	lst := NewList[int](1, 2, 3, 4, 5)
+	lst := NewList[int](5, 2, 4, 1, 3)
+	assert.Equal(t, 1, lst.MinItem())
 
-	assert.Equal(t, lst.MinItem(), 1)
-	assert.Equal(t, lst.MinItem(), 1)
+	lst = NewList[int]()
+	assert.Equal(t, 0, lst.MinItem())
 }
 
 func Test_enumerable_Max(t *testing.T) {
-	lst := NewList[int](1, 2, 3, 4, 5)
+	lst := NewList[int](2, 4, 5, 1, 3)
 	max := lst.Max(func(item int) any {
 		return item - 1
 	})
-	assert.Equal(t, max, 4)
+	assert.Equal(t, 4, max)
+
+	lst = NewList[int]()
+	max = lst.Max(func(item int) any {
+		return item
+	})
+	assert.Equal(t, 0, max)
 }
 
 func Test_enumerable_MaxItem(t *testing.T) {
+	lst := NewList[int](2, 4, 5, 1, 3)
+	assert.Equal(t, 5, lst.MaxItem())
 
-	lst := NewList[int](1, 2, 3, 4, 5)
-	assert.Equal(t, lst.MaxItem(), 5)
+	lst = NewList[int]()
+	assert.Equal(t, 0, lst.MaxItem())
 }
 
 func Test_enumerable_GroupBy(t *testing.T) {
@@ -150,6 +179,13 @@ func Test_enumerable_GroupBy(t *testing.T) {
 	assert.Equal(t, lstMap["steden"][0].age, 36)
 	assert.Equal(t, lstMap["steden"][1].age, 18)
 	assert.Equal(t, lstMap["steden2"][0].age, 40)
+
+	assert.Panics(t, func() {
+		var arr []string
+		lst.GroupBy(&arr, func(item testItem) any {
+			return item.name
+		})
+	})
 }
 
 func Test_enumerable_OrderBy(t *testing.T) {
@@ -233,6 +269,13 @@ func Test_enumerable_Select(t *testing.T) {
 	for index, yaml := range lst.ToArray() {
 		assert.Equal(t, lstSelect.Index(index), "go:"+yaml)
 	}
+
+	assert.Panics(t, func() {
+		var lstSelect int
+		lst.Select(&lstSelect, func(item string) any {
+			return "go:" + item
+		})
+	})
 }
 
 func Test_enumerable_SelectMany(t *testing.T) {
@@ -259,6 +302,27 @@ func Test_enumerable_SelectMany(t *testing.T) {
 	assert.Equal(t, lst2.Index(1), "2")
 	assert.Equal(t, lst2.Index(2), "3")
 	assert.Equal(t, lst2.Index(3), "4")
+
+	assert.Panics(t, func() {
+		var lst2 List[int]
+		lst.SelectMany(&lst2, func(item []string) any {
+			return item
+		})
+	})
+
+	assert.Panics(t, func() {
+		var lst2 []int
+		lst.SelectMany(&lst2, func(item []string) any {
+			return item
+		})
+	})
+
+	assert.Panics(t, func() {
+		var lst2 int
+		lst.SelectMany(&lst2, func(item []string) any {
+			return item
+		})
+	})
 }
 
 func Test_enumerable_SelectManyItem(t *testing.T) {
@@ -303,6 +367,16 @@ func Test_enumerable_ToMap(t *testing.T) {
 	assert.Equal(t, lstMap["steden"][0], 36)
 	assert.Equal(t, lstMap["steden"][1], 18)
 	assert.Equal(t, lstMap["steden2"][0], 40)
+
+	assert.Panics(t, func() {
+		var arr []string
+		lst.ToMap(&arr,
+			func(key testItem) any {
+				return key.name
+			}, func(value testItem) any {
+				return value.age
+			})
+	})
 }
 
 func Test_enumerable_ToPageList(t *testing.T) {
@@ -313,6 +387,23 @@ func Test_enumerable_ToPageList(t *testing.T) {
 	assert.Equal(t, array[0], 4)
 	assert.Equal(t, array[1], 5)
 	assert.Equal(t, array[2], 6)
+
+	assert.Panics(t, func() {
+		lst.ToPageList(0, 0)
+	})
+	assert.Panics(t, func() {
+		lst.ToPageList(3, 0)
+	})
+
+	item = lst.ToPageList(8, 2)
+	array = item.List.ToArray()
+	assert.Equal(t, array[0], 1)
+	assert.Equal(t, array[1], 2)
+	assert.Equal(t, array[2], 3)
+	assert.Equal(t, array[3], 4)
+	assert.Equal(t, array[4], 5)
+	assert.Equal(t, array[5], 6)
+	assert.Equal(t, array[6], 7)
 }
 
 func Test_enumerable_MapToList(t *testing.T) {
@@ -340,6 +431,11 @@ func Test_enumerable_MapToList(t *testing.T) {
 	assert.Equal(t, lstAny.Count(), lstInt.Count())
 	assert.Equal(t, lstAny.Index(0), lstInt.Index(0))
 	assert.Equal(t, lstAny.Index(1), lstInt.Index(1))
+
+	assert.Panics(t, func() {
+		var lstInt []int
+		lstAny.MapToList(&lstInt)
+	})
 }
 
 func Test_enumerable_MapToArray(t *testing.T) {
@@ -367,6 +463,11 @@ func Test_enumerable_MapToArray(t *testing.T) {
 	assert.Equal(t, lstAny.Count(), len(arrInt))
 	assert.Equal(t, lstAny.Index(0), arrInt[0])
 	assert.Equal(t, lstAny.Index(1), arrInt[1])
+
+	assert.Panics(t, func() {
+		var val int
+		lstAny.MapToArray(&val)
+	})
 }
 
 func Test_enumerable_Intersect(t *testing.T) {
@@ -472,8 +573,16 @@ func TestEnumerable_Rand(t *testing.T) {
 			t.Error()
 		}
 	}
+
+	val := NewList(1).Rand()
+	assert.Equal(t, 1, val)
 }
 
 func TestEnumerable_ToString(t *testing.T) {
 	assert.Equal(t, "1,2,3", NewList(1, 2, 3).ToString(","))
+}
+
+func TestEnumerable_Empty(t *testing.T) {
+	lst1 := NewList(1, 2, 3).Empty()
+	assert.Equal(t, 0, lst1.Count())
 }

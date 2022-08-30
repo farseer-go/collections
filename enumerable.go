@@ -413,7 +413,7 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 		for _, item := range *receiver.source {
 			itemValue := reflect.ValueOf(fn(item))
 			if itemValue.Type() != sliceOrListType {
-				panic("arrSlice入参类型必须与fn返回的类型一致")
+				panic("sliceOrList入参类型必须与fn返回的类型一致")
 			}
 			value = reflect.AppendSlice(value, itemValue)
 		}
@@ -496,24 +496,22 @@ func (receiver Enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T
 	}
 
 	if pageSize < 1 {
-		pageSize = 10
+		panic("pageSize不能小于1")
 	}
 
 	// 计算总页数
-	var allCurrentPage int64 = 0
+	var allCurrentPage int64
 	// 没有设置pageIndex，则按take返回
 	if pageIndex < 1 {
-		take := receiver.Take(pageSize)
-		pageList.List = take.ToList()
-		return pageList
+		panic("pageIndex不能小于1")
+		//take := receiver.Take(pageSize)
+		//pageList.List = take.ToList()
+		//return pageList
 	}
 
 	allCurrentPage = pageList.RecordCount / int64(pageSize)
 	if pageList.RecordCount%int64(pageSize) != 0 {
 		allCurrentPage++
-	}
-	if allCurrentPage == 0 {
-		allCurrentPage = 1
 	}
 
 	if int64(pageIndex) > allCurrentPage {
@@ -544,7 +542,8 @@ func (receiver Enumerable[T]) MapToList(toList any) {
 		toValue = toValue.Elem()
 	}
 	toType := toValue.Type()
-	if !strings.HasPrefix(toType.String(), "collections.List[") {
+
+	if !ReflectIsList(toType) {
 		panic("要转换的类型，必须也是collections.List集合")
 	}
 
