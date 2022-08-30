@@ -2,6 +2,7 @@ package collections
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -17,4 +18,12 @@ func TestList_Source(t *testing.T) {
 	fmt.Println(lst.Collection.source)
 	fmt.Println(lst.IList.source)
 
+}
+
+func TestList_AsEnumerable(t *testing.T) {
+	lst := NewList[int](1, 2, 3)
+	enumerable := lst.AsEnumerable()
+	lst.Add(4)
+
+	assert.Equal(t, 3, enumerable.Count())
 }

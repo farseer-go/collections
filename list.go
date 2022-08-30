@@ -22,7 +22,10 @@ func NewList[T any](source ...T) List[T] {
 
 // AsEnumerable 返回enumerable类型
 func (receiver *List[T]) AsEnumerable() Enumerable[T] {
-	return receiver.Enumerable
+	source := *receiver.source
+	return Enumerable[T]{
+		source: &source,
+	}
 }
 
 // New 返回enumerable类型
