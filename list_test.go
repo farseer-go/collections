@@ -1,6 +1,7 @@
 package collections
 
 import (
+	"github.com/farseer-go/fs/flog"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
