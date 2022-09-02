@@ -42,7 +42,10 @@ func (receiver Enumerable[T]) Last() T {
 
 // Count 集合大小
 func (receiver Enumerable[T]) Count() int {
-	return len(*receiver.source)
+	if receiver.source != nil {
+		return len(*receiver.source)
+	}
+	return 0
 }
 
 // Contains 是否包含元素
