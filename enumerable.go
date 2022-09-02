@@ -486,6 +486,9 @@ func (receiver Enumerable[T]) ToList() List[T] {
 
 // ToArray 转成数组
 func (receiver Enumerable[T]) ToArray() []T {
+	if receiver.source == nil {
+		return []T{}
+	}
 	return *receiver.source
 }
 
