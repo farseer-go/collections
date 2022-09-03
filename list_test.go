@@ -2,6 +2,7 @@ package collections
 
 import (
 	"github.com/farseer-go/fs/flog"
+	"github.com/farseer-go/fs/types"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -41,10 +42,17 @@ func TestReflectIsList(t *testing.T) {
 	type testStruct struct {
 	}
 	var test testStruct
-	assert.True(t, ReflectIsList(reflect.TypeOf(lst)))
-	assert.True(t, ReflectIsList(reflect.TypeOf(&lst)))
-	assert.False(t, ReflectIsList(reflect.TypeOf(1)))
-	assert.False(t, ReflectIsList(reflect.TypeOf(test)))
+	_, isList := types.IsList(reflect.ValueOf(lst))
+	assert.True(t, isList)
+
+	_, isList = types.IsList(reflect.ValueOf(&lst))
+	assert.True(t, isList)
+
+	_, isList = types.IsList(reflect.ValueOf(1))
+	assert.False(t, isList)
+
+	_, isList = types.IsList(reflect.ValueOf(test))
+	assert.False(t, isList)
 }
 
 func TestReflectToArray(t *testing.T) {

@@ -3,6 +3,7 @@ package collections
 import (
 	"github.com/devfeel/mapper"
 	"github.com/farseer-go/fs/parse"
+	"github.com/farseer-go/fs/types"
 	"math/rand"
 	"reflect"
 	"strings"
@@ -208,12 +209,13 @@ func (receiver Enumerable[T]) MaxItem() T {
 // GroupBy 将数组进行分组后返回map
 func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) any) {
 	mapSliceVal := reflect.ValueOf(mapSlice).Elem()
-	if mapSliceVal.Kind() != reflect.Map {
+	mapSliceType, isMap := types.IsMap(mapSliceVal)
+	if !isMap {
 		panic("mapSlice入参必须为map类型")
 	}
 
 	// make....
-	mapSliceVal.Set(reflect.MakeMap(mapSliceVal.Type()))
+	mapSliceVal.Set(reflect.MakeMap(mapSliceType))
 
 	for _, item := range *receiver.source {
 		// 生成key
@@ -222,7 +224,7 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 		findMapValue := mapSliceVal.MapIndex(key)
 		// nil说明map不存在这个key
 		if findMapValue == reflect.ValueOf(nil) {
-			findMapValue = reflect.MakeSlice(mapSliceVal.Type().Elem(), 0, 0)
+			findMapValue = reflect.MakeSlice(mapSliceType.Elem(), 0, 0)
 			mapSliceVal.SetMapIndex(key, findMapValue)
 		}
 		mapValue := reflect.Append(findMapValue, reflect.ValueOf(item))
@@ -366,17 +368,17 @@ func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 func (receiver Enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
 	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
 	// 切片类型
-	if sliceOrListVal.Kind() == reflect.Slice {
-		value := reflect.MakeSlice(sliceOrListVal.Type(), 0, 0)
+	if sliceOrListType, isSlice := types.IsSlice(sliceOrListVal); isSlice {
+		value := reflect.MakeSlice(sliceOrListType, 0, 0)
 		for _, item := range *receiver.source {
 			value = reflect.Append(value, reflect.ValueOf(fn(item)))
 		}
 		sliceOrListVal.Set(value)
 		return
 	}
-	if ReflectIsList(sliceOrListVal.Type()) {
+	if sliceOrListType, isList := types.IsList(sliceOrListVal); isList {
 		// 初始化
-		value := ReflectNew(sliceOrListVal.Type())
+		value := ReflectNew(sliceOrListType)
 
 		for _, item := range *receiver.source {
 			ReflectAdd(&value, fn(item))
@@ -410,8 +412,7 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
 
 	// 切片类型
-	sliceOrListType := sliceOrListVal.Type()
-	if sliceOrListVal.Kind() == reflect.Slice {
+	if sliceOrListType, isSlice := types.IsSlice(sliceOrListVal); isSlice {
 		value := reflect.MakeSlice(sliceOrListType, 0, 0)
 		for _, item := range *receiver.source {
 			itemValue := reflect.ValueOf(fn(item))
@@ -423,7 +424,7 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 		sliceOrListVal.Set(value)
 		return
 	}
-	if ReflectIsList(sliceOrListType) {
+	if sliceOrListType, isList := types.IsList(sliceOrListVal); isList {
 		// 初始化
 		value := ReflectNew(sliceOrListType)
 
@@ -460,12 +461,13 @@ func (receiver Enumerable[T]) SelectManyItem(sliceOrList any) {
 // ToMap 转成字典
 func (receiver Enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any, getMapValueFunc func(item T) any) {
 	mapSliceVal := reflect.ValueOf(mapSlice).Elem()
-	if mapSliceVal.Kind() != reflect.Map {
+	mapSliceType, isMap := types.IsMap(mapSliceVal)
+	if !isMap {
 		panic("mapSlice入参必须为map类型")
 	}
 
 	// make....
-	mapSliceVal.Set(reflect.MakeMap(mapSliceVal.Type()))
+	mapSliceVal.Set(reflect.MakeMap(mapSliceType))
 
 	for _, item := range *receiver.source {
 		// 生成key
@@ -474,7 +476,7 @@ func (receiver Enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any
 		findMapValue := mapSliceVal.MapIndex(key)
 		// nil说明map不存在这个key
 		if findMapValue == reflect.ValueOf(nil) {
-			findMapValue = reflect.MakeSlice(mapSliceVal.Type().Elem(), 0, 0)
+			findMapValue = reflect.MakeSlice(mapSliceType.Elem(), 0, 0)
 			mapSliceVal.SetMapIndex(key, findMapValue)
 		}
 		mapValue := reflect.Append(findMapValue, reflect.ValueOf(getMapValueFunc(item)))
@@ -547,9 +549,8 @@ func (receiver Enumerable[T]) MapToList(toList any) {
 	if toValue.Kind() == reflect.Ptr || toValue.Kind() == reflect.Interface {
 		toValue = toValue.Elem()
 	}
-	toType := toValue.Type()
-
-	if !ReflectIsList(toType) {
+	toType, isList := types.IsList(toValue)
+	if !isList {
 		panic("要转换的类型，必须也是collections.List集合")
 	}
 
@@ -576,8 +577,8 @@ func (receiver Enumerable[T]) MapToList(toList any) {
 // toSlice：必须为切片类型
 func (receiver Enumerable[T]) MapToArray(toSlice any) {
 	toSliceValue := reflect.ValueOf(toSlice).Elem()
-	toSliceType := toSliceValue.Type()
-	if toSliceType.Kind() != reflect.Slice {
+	toSliceType, isSlice := types.IsSlice(toSliceValue)
+	if !isSlice {
 		panic("要转换的类型，必须是切片类型")
 	}
 
