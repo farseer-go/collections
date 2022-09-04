@@ -1,20 +1,17 @@
 package collections
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/farseer-go/fs/parse"
-	"reflect"
 )
 
 // Dictionary 字典
 type Dictionary[TKey comparable, TValue any] struct {
 	// source array
 	source map[TKey]TValue
-	// array type
-	arrayType reflect.Type
-	// element type
-	elementType reflect.Type
-	// value type
-	value reflect.Value
 }
 
 // NewDictionary 创建一个字典
@@ -101,3 +98,67 @@ func (receiver Dictionary[TKey, TValue]) GetValue(key TKey) TValue {
 func (receiver Dictionary[TKey, TValue]) ToMap() map[TKey]TValue {
 	return receiver.source
 }
+
+// Value return json value, implement driver.Valuer interface
+func (receiver Dictionary[TKey, TValue]) Value() (driver.Value, error) {
+	if receiver.source == nil {
+		return nil, nil
+	}
+	ba, err := receiver.MarshalJSON()
+	return string(ba), err
+}
+
+// Scan scan value into Jsonb, implements sql.Scanner interface
+func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
+	if val == nil {
+		*receiver = NewDictionary[TKey, TValue]()
+		return nil
+	}
+	var ba []byte
+	switch v := val.(type) {
+	case []byte:
+		ba = v
+	case string:
+		ba = []byte(v)
+	default:
+		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", val))
+	}
+
+	t := map[TKey]TValue{}
+	err := json.Unmarshal(ba, &t)
+	receiver.source = t
+	return err
+}
+
+// MarshalJSON to output non base64 encoded []byte
+func (receiver Dictionary[TKey, TValue]) MarshalJSON() ([]byte, error) {
+	if receiver.source == nil {
+		return []byte("null"), nil
+	}
+	return json.Marshal(receiver.source)
+}
+
+// UnmarshalJSON to deserialize []byte
+func (receiver *Dictionary[TKey, TValue]) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, &receiver.source)
+}
+
+// GormDataType gorm common data type
+func (receiver Dictionary[TKey, TValue]) GormDataType() string {
+	return "jsonmap"
+}
+
+//// GormDBDataType gorm db data type
+//func (Dictionary[TKey, TValue]) GormDBDataType(db *gorm.DB, field *schema.Field) string {
+//	switch db.Dialector.Name() {
+//	case "sqlite":
+//		return "JSON"
+//	case "mysql":
+//		return "JSON"
+//	case "postgres":
+//		return "JSONB"
+//	case "sqlserver":
+//		return "NVARCHAR(MAX)"
+//	}
+//	return ""
+//}

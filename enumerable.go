@@ -1,6 +1,7 @@
 package collections
 
 import (
+	"encoding/json"
 	"github.com/devfeel/mapper"
 	"github.com/farseer-go/fs/parse"
 	"github.com/farseer-go/fs/types"
@@ -675,4 +676,17 @@ func (receiver Enumerable[T]) ToString(split string) string {
 		arrStr = append(arrStr, parse.Convert(item, ""))
 	}
 	return strings.Join(arrStr, split)
+}
+
+// MarshalJSON to output non base64 encoded []byte
+func (receiver *Enumerable[T]) MarshalJSON() ([]byte, error) {
+	if receiver.source == nil {
+		return []byte("null"), nil
+	}
+	return json.Marshal(receiver.source)
+}
+
+// UnmarshalJSON to deserialize []byte
+func (receiver *Enumerable[T]) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, &receiver.source)
 }
