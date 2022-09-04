@@ -549,18 +549,18 @@ func (receiver Enumerable[T]) MapToList(toList any) {
 	if toValue.Kind() == reflect.Ptr || toValue.Kind() == reflect.Interface {
 		toValue = toValue.Elem()
 	}
-	toType, isList := types.IsList(toValue)
+	listType, isList := types.IsList(toValue)
 	if !isList {
 		panic("要转换的类型，必须也是collections.List集合")
 	}
 
 	// 拿到数组类型后，先mapper到数组
-	destToArrayType := ReflectItemArrayType(toType)
+	destToArrayType := ReflectItemArrayType(listType)
 
 	// 只有结构数组，才能用mapper进行转换
 	destArr := reflect.New(destToArrayType).Interface()
 	// 初始化集合
-	newValue := ReflectNew(toType)
+	newValue := ReflectNew(listType)
 	if destToArrayType.Elem().Kind() == reflect.Struct {
 		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
 		// 将数组添加到集合
