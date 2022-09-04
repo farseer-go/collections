@@ -1,5 +1,12 @@
 package collections
 
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
+	"fmt"
+)
+
 // List 集合
 type List[T any] struct {
 	source        *[]T // 集合
@@ -32,4 +39,36 @@ func (receiver *List[T]) New() {
 		receiver.IList.Collection.source = source
 		receiver.Enumerable.source = source
 	}
+}
+
+// Value return json value, implement driver.Valuer interface
+func (receiver List[T]) Value() (driver.Value, error) {
+	if receiver.source == nil {
+		//return nil, nil
+		return "{}", nil
+	}
+	ba, err := receiver.MarshalJSON()
+	return string(ba), err
+}
+
+// Scan scan value into Jsonb, implements sql.Scanner interface
+func (receiver *List[T]) Scan(val any) error {
+	if val == nil {
+		*receiver = NewList[T]()
+		return nil
+	}
+	var ba []byte
+	switch v := val.(type) {
+	case []byte:
+		ba = v
+	case string:
+		ba = []byte(v)
+	default:
+		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", val))
+	}
+
+	var t []T
+	err := json.Unmarshal(ba, &t)
+	*receiver = NewList[T](t...)
+	return err
 }
