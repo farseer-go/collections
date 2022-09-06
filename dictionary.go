@@ -148,6 +148,11 @@ func (receiver Dictionary[TKey, TValue]) GormDataType() string {
 	return "jsonmap"
 }
 
+// IsNil 是否未初始化
+func (receiver Dictionary[TKey, TValue]) IsNil() bool {
+	return receiver.source == nil
+}
+
 //// GormDBDataType gorm db data type
 //func (Dictionary[TKey, TValue]) GormDBDataType(db *gorm.DB, field *schema.Field) string {
 //	switch db.Dialector.Name() {

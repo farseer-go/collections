@@ -17,8 +17,10 @@ Support for List collections and linq syntax
       * Remove（移除元素）
       * ContainsKey（是否存在KEY）
       * ContainsValue（是否存在指定的Value）
+      * IsNil（是否未初始化）
     * List（泛型集合）
       * AsEnumerable（返回enumerable类型）
+      * IsNil（是否未初始化）
     * IList
       * Index（获取第index索引位置的元素）
       * IndexOf（元素在集合的索引位置）

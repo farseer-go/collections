@@ -72,3 +72,8 @@ func (receiver *List[T]) Scan(val any) error {
 	*receiver = NewList[T](t...)
 	return err
 }
+
+// IsNil 是否未初始化
+func (receiver *List[T]) IsNil() bool {
+	return receiver.source == nil
+}
