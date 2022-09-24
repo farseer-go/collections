@@ -33,6 +33,25 @@ func CompareLeftGreaterThanRight(leftValue any, rightValue any) bool {
 		return rightValue.(float32) <= leftValue.(float32)
 	case reflect.Float64:
 		return rightValue.(float64) <= leftValue.(float64)
+	case reflect.String:
+		strRight := rightValue.(string)
+		strLeft := leftValue.(string)
+		// 空的字符串，认为排在前面，所以返回true
+		if strLeft == "" {
+			return true
+		}
+
+		for i := 0; i < len(strLeft); i++ {
+			// 右边字符串比较短，则右边排前面
+			if len(strRight) == i {
+				return false
+			}
+			if strLeft[i] == strRight[i] {
+				continue
+			}
+
+			return strLeft[i] > strRight[i]
+		}
 	}
 	panic(fmt.Errorf("该类型无法比较：%s", kind))
 }

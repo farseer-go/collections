@@ -42,7 +42,12 @@ func TestCompareLeftGreaterThanRight(t *testing.T) {
 	assert.False(t, CompareLeftGreaterThanRight(float64(1), float64(5)))
 	assert.True(t, CompareLeftGreaterThanRight(float64(5), float64(1)))
 
+	assert.False(t, CompareLeftGreaterThanRight("a", "b"))
+	assert.False(t, CompareLeftGreaterThanRight("aa", "ab"))
+	assert.True(t, CompareLeftGreaterThanRight("", "ab"))
+	assert.False(t, CompareLeftGreaterThanRight("aba", "ab"))
+
 	assert.Panics(t, func() {
-		CompareLeftGreaterThanRight("a", "b")
+		CompareLeftGreaterThanRight([]int{}, []int{})
 	})
 }

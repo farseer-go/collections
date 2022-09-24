@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// Addition 两个数值相加
 func Addition(val1 any, val2 any) any {
 	if val1 == nil {
 		return val2
