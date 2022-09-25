@@ -47,3 +47,13 @@ func TestCollection_MarshalJSON(t *testing.T) {
 	assert.Equal(t, string(strjson), "null")
 	assert.Equal(t, err, nil)
 }
+
+func TestCollection_UnmarshalJSON(t *testing.T) {
+	lst := NewList[string]()
+	jsonData := []byte(`["sam","18"]`)
+	err := lst.UnmarshalJSON(jsonData)
+	maps := lst.ToArray()
+	assert.Equal(t, err, nil)
+	assert.Equal(t, maps[0], "sam")
+	assert.Equal(t, maps[1], "18")
+}

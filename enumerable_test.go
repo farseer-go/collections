@@ -586,3 +586,13 @@ func TestEnumerable_Empty(t *testing.T) {
 	lst1 := NewList(1, 2, 3).Empty()
 	assert.Equal(t, 0, lst1.Count())
 }
+
+func TestEnumerable_ToArray(t *testing.T) {
+	lst1 := List[int]{}
+	assert.Equal(t, lst1.ToArray(), []int{})
+}
+
+func TestEnumerable_Count(t *testing.T) {
+	lst1 := List[int]{}
+	assert.Equal(t, lst1.Count(), 0)
+}
