@@ -527,7 +527,11 @@ func (receiver Enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T
 		pageIndex = int(allCurrentPage)
 	}
 	skipCount := pageSize * (pageIndex - 1)
-	lst := (*receiver.source)[skipCount : skipCount+pageSize]
+	endIndex := skipCount + pageSize
+	if endIndex > len(*receiver.source) {
+		endIndex = len(*receiver.source)
+	}
+	lst := (*receiver.source)[skipCount:endIndex]
 	pageList.List = NewList(lst...)
 	return pageList
 }
