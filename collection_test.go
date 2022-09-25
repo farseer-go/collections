@@ -37,13 +37,13 @@ func Test_collection_RemoveAll(t *testing.T) {
 	assert.Equal(t, lst.Index(1), 2)
 }
 
-func Test_collection_MarshalJSON(t *testing.T) {
+func TestCollection_MarshalJSON(t *testing.T) {
 	lst := NewList[int](1, 2, 3, 6)
 	strjson, _ := lst.MarshalJSON()
 	retjson, _ := json.Marshal(lst.source)
 	assert.Equal(t, strjson, retjson)
-	lst2 := NewList[interface{}](nil)
+	lst2 := List[any]{}
 	strjson, err := lst2.MarshalJSON()
-	assert.Equal(t, string(strjson), "[null]")
+	assert.Equal(t, string(strjson), "null")
 	assert.Equal(t, err, nil)
 }
