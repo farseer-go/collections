@@ -1,6 +1,7 @@
 package collections
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -34,4 +35,15 @@ func Test_collection_RemoveAll(t *testing.T) {
 	assert.Equal(t, lst.Count(), 2)
 	assert.Equal(t, lst.Index(0), 1)
 	assert.Equal(t, lst.Index(1), 2)
+}
+
+func Test_collection_MarshalJSON(t *testing.T) {
+	lst := NewList[int](1, 2, 3, 6)
+	strjson, _ := lst.MarshalJSON()
+	retjson, _ := json.Marshal(lst.source)
+	assert.Equal(t, strjson, retjson)
+	lst2 := NewList[interface{}](nil)
+	strjson, err := lst2.MarshalJSON()
+	assert.Equal(t, string(strjson), "[null]")
+	assert.Equal(t, err, nil)
 }
