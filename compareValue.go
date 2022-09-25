@@ -52,6 +52,8 @@ func CompareLeftGreaterThanRight(leftValue any, rightValue any) bool {
 
 			return strLeft[i] > strRight[i]
 		}
+		// 说明left长度比right短。则短的排前面
+		return true
 	}
 	panic(fmt.Errorf("该类型无法比较：%s", kind))
 }
