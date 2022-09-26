@@ -65,3 +65,14 @@ func TestReflectToArray(t *testing.T) {
 	assert.Equal(t, 3, arr[2])
 
 }
+
+func TestList_Value(t *testing.T) {
+	lst := NewList[int](1, 2, 3)
+	vals, err := lst.Value()
+	assert.Equal(t, err, nil)
+	assert.Equal(t, vals, `[1,2,3]`)
+	lst = List[int]{}
+	vals, err = lst.Value()
+	assert.Equal(t, err, nil)
+	assert.Equal(t, vals, `{}`)
+}
