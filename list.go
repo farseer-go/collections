@@ -2,9 +2,10 @@ package collections
 
 import (
 	"database/sql/driver"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/farseer-go/fs/parse"
+	"strings"
 )
 
 // List 集合
@@ -67,10 +68,14 @@ func (receiver *List[T]) Scan(val any) error {
 		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", val))
 	}
 
-	var t []T
-	err := json.Unmarshal(ba, &t)
-	*receiver = NewList[T](t...)
-	return err
+	// 按,号分隔
+	*receiver = NewList[T]()
+	dataSplits := strings.Split(string(ba), ",")
+	var defValue T
+	for _, data := range dataSplits {
+		receiver.Add(parse.Convert(data, defValue))
+	}
+	return nil
 }
 
 // IsNil 是否未初始化
