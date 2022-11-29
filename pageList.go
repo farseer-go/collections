@@ -21,16 +21,16 @@ func NewPageList[TData any](list List[TData], recordCount int64) PageList[TData]
 }
 
 // MapToPageList 类型转换，如PageList[PO]转PageList[DO]
-func (r PageList[TData]) MapToPageList(pageList any) {
+func (receiver PageList[TData]) MapToPageList(pageList any) {
 	pageListValue := reflect.ValueOf(pageList).Elem()
 	newValue := reflect.New(pageListValue.Type()).Elem()
 	// 设置总记录数
-	newValue.FieldByName("RecordCount").SetInt(r.RecordCount)
+	newValue.FieldByName("RecordCount").SetInt(receiver.RecordCount)
 
 	// 得到目标List的any对象
 	newList := newValue.FieldByName("List").Interface()
 	// 将原r.List转换到目标List对象
-	r.List.MapToList(&newList)
+	receiver.List.MapToList(&newList)
 	// 转换后将newList赋值给目标对象的List
 	newValue.FieldByName("List").Set(reflect.ValueOf(newList))
 	pageListValue.Set(newValue)

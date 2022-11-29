@@ -683,7 +683,7 @@ func (receiver Enumerable[T]) ToString(split string) string {
 }
 
 // MarshalJSON to output non base64 encoded []byte
-func (receiver *Enumerable[T]) MarshalJSON() ([]byte, error) {
+func (receiver Enumerable[T]) MarshalJSON() ([]byte, error) {
 	if receiver.source == nil {
 		return []byte("null"), nil
 	}
@@ -691,6 +691,6 @@ func (receiver *Enumerable[T]) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON to deserialize []byte
-func (receiver *Enumerable[T]) UnmarshalJSON(b []byte) error {
+func (receiver Enumerable[T]) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, &receiver.source)
 }
