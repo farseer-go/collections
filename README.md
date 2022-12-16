@@ -7,7 +7,7 @@
 ![](https://img.shields.io/github/v/release/farseer-go/collections)
 ![](https://img.shields.io/github/languages/code-size/farseer-go/collections)
 ![](https://img.shields.io/github/directory-file-count/farseer-go/collections)
-![](https://img.shields.io/github/last-commit/farseer-go/collections)
+![](https://goreportcard.com/badge/github.com/farseer-go/collections)
 
 go内置的集合只有数组和切片，有时候我们需要更多高级的数据处理功能，比如：`排序、去重、交集、并集、聚合`操作时，需要编写非常多的代码才能实现。
 
