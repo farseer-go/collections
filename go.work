@@ -5,4 +5,5 @@ use (
 )
 replace (
     github.com/farseer-go/fs => ../fs
+    github.com/farseer-go/mapper => ../mapper
 )
