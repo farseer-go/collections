@@ -1,8 +1,6 @@
 package collections
 
-import (
-	"reflect"
-)
+import "reflect"
 
 // PageList 用于分页数组，包含总记录数
 type PageList[TData any] struct {

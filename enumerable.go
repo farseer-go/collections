@@ -2,6 +2,7 @@ package collections
 
 import (
 	"encoding/json"
+	"github.com/devfeel/mapper"
 	"github.com/farseer-go/fs/parse"
 	"github.com/farseer-go/fs/types"
 	"math/rand"
@@ -638,58 +639,58 @@ func (receiver Enumerable[T]) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, &receiver.source)
 }
 
-//// MapToList 类型转换，比如List[PO] 转换为 List[DO]
-//// toList：必须为List类型
-//func (receiver Enumerable[T]) MapToList(toList any) {
-//	toValue := reflect.ValueOf(toList).Elem()
-//	// 传进来的，可能不是struct，而是通过反射创建的any
-//	if toValue.Kind() == reflect.Ptr || toValue.Kind() == reflect.Interface {
-//		toValue = toValue.Elem()
-//	}
-//	listType, isList := types.IsList(toValue)
-//	if !isList {
-//		panic("要转换的类型，必须也是collections.List集合")
-//	}
-//
-//	// 拿到数组类型后，先mapper到数组
-//	destToArrayType := ReflectItemArrayType(listType)
-//
-//	// 只有结构数组，才能用mapper进行转换
-//	destArr := reflect.New(destToArrayType).Interface()
-//	// 初始化集合
-//	newValue := ReflectNew(listType)
-//	if destToArrayType.Elem().Kind() == reflect.Struct {
-//		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
-//		// 将数组添加到集合
-//		ReflectAdd(&newValue, destArr)
-//	} else {
-//		for _, item := range *receiver.source {
-//			ReflectAdd(&newValue, item)
-//		}
-//	}
-//	reflect.ValueOf(toList).Elem().Set(newValue.Elem())
-//}
-//
-//// MapToArray 类型转换，比如List[PO] 转换为 []DO
-//// toSlice：必须为切片类型
-//func (receiver Enumerable[T]) MapToArray(toSlice any) {
-//	toSliceValue := reflect.ValueOf(toSlice).Elem()
-//	toSliceType, isSlice := types.IsSlice(toSliceValue)
-//	if !isSlice {
-//		panic("要转换的类型，必须是切片类型")
-//	}
-//
-//	destArr := reflect.New(toSliceType).Interface()
-//
-//	// 只有结构数组，才能用mapper进行转换
-//	if toSliceType.Elem().Kind() == reflect.Struct {
-//		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
-//		toSliceValue.Set(reflect.ValueOf(destArr).Elem())
-//	} else {
-//		value := reflect.MakeSlice(toSliceType, 0, 0)
-//		for _, item := range *receiver.source {
-//			value = reflect.Append(value, reflect.ValueOf(item))
-//		}
-//		toSliceValue.Set(value)
-//	}
-//}
+// MapToList 类型转换，比如List[PO] 转换为 List[DO]
+// toList：必须为List类型
+func (receiver Enumerable[T]) MapToList(toList any) {
+	toValue := reflect.ValueOf(toList).Elem()
+	// 传进来的，可能不是struct，而是通过反射创建的any
+	if toValue.Kind() == reflect.Ptr || toValue.Kind() == reflect.Interface {
+		toValue = toValue.Elem()
+	}
+	listType, isList := types.IsList(toValue)
+	if !isList {
+		panic("要转换的类型，必须也是collections.List集合")
+	}
+
+	// 拿到数组类型后，先mapper到数组
+	destToArrayType := ReflectItemArrayType(listType)
+
+	// 只有结构数组，才能用mapper进行转换
+	destArr := reflect.New(destToArrayType).Interface()
+	// 初始化集合
+	newValue := ReflectNew(listType)
+	if destToArrayType.Elem().Kind() == reflect.Struct {
+		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
+		// 将数组添加到集合
+		ReflectAdd(&newValue, destArr)
+	} else {
+		for _, item := range *receiver.source {
+			ReflectAdd(&newValue, item)
+		}
+	}
+	reflect.ValueOf(toList).Elem().Set(newValue.Elem())
+}
+
+// MapToArray 类型转换，比如List[PO] 转换为 []DO
+// toSlice：必须为切片类型
+func (receiver Enumerable[T]) MapToArray(toSlice any) {
+	toSliceValue := reflect.ValueOf(toSlice).Elem()
+	toSliceType, isSlice := types.IsSlice(toSliceValue)
+	if !isSlice {
+		panic("要转换的类型，必须是切片类型")
+	}
+
+	destArr := reflect.New(toSliceType).Interface()
+
+	// 只有结构数组，才能用mapper进行转换
+	if toSliceType.Elem().Kind() == reflect.Struct {
+		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
+		toSliceValue.Set(reflect.ValueOf(destArr).Elem())
+	} else {
+		value := reflect.MakeSlice(toSliceType, 0, 0)
+		for _, item := range *receiver.source {
+			value = reflect.Append(value, reflect.ValueOf(item))
+		}
+		toSliceValue.Set(value)
+	}
+}
