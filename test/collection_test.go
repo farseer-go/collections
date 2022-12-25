@@ -41,7 +41,7 @@ func Test_collection_RemoveAll(t *testing.T) {
 func TestCollection_MarshalJSON(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3, 6)
 	strjson, _ := lst.MarshalJSON()
-	retjson, _ := json.Marshal(lst.source)
+	retjson, _ := json.Marshal(lst)
 	assert.Equal(t, strjson, retjson)
 	lst2 := collections.List[any]{}
 	strjson, err := lst2.MarshalJSON()

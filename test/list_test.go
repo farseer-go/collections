@@ -2,26 +2,11 @@ package test
 
 import (
 	"github.com/farseer-go/collections"
-	"github.com/farseer-go/fs/flog"
 	"github.com/farseer-go/fs/types"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
-
-func TestList_Source(t *testing.T) {
-	lst := collections.NewList[int](1, 2, 3, 4, 5, 6)
-	lst.Add(7)
-	lst.Where(func(item int) bool { return item >= 3 }).
-		Where(func(item int) bool { return item >= 5 }).
-		Distinct().Skip(1).Take(3).Contains(6)
-
-	flog.Info(lst.source)
-	flog.Info(lst.Enumerable.source)
-	flog.Info(lst.Collection.source)
-	flog.Info(lst.IList.source)
-
-}
 
 func TestList_AsEnumerable(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3)
