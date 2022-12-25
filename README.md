@@ -1,10 +1,18 @@
 # List集合
 > 包：`"github.com/farseer-go/collections"`
 
+- `Document`
+    - [English](https://farseer-go.gitee.io/en-us/)
+    - [中文](https://farseer-go.gitee.io/)
+    - [English](https://farseer-go.github.io/doc/en-us/)
+- Source
+    - [github](https://github.com/farseer-go/fs)
+
 ![](https://img.shields.io/github/stars/farseer-go?style=social)
 ![](https://img.shields.io/github/license/farseer-go/collections)
 ![](https://img.shields.io/github/go-mod/go-version/farseer-go/collections)
 ![](https://img.shields.io/github/v/release/farseer-go/collections)
+![Codecov](https://img.shields.io/codecov/c/github/farseer-go/collections)
 ![](https://img.shields.io/github/languages/code-size/farseer-go/collections)
 ![](https://img.shields.io/github/directory-file-count/farseer-go/collections)
 ![](https://goreportcard.com/badge/github.com/farseer-go/collections)
