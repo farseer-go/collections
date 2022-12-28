@@ -12,7 +12,7 @@
 ![](https://img.shields.io/github/license/farseer-go/collections)
 ![](https://img.shields.io/github/go-mod/go-version/farseer-go/collections)
 ![](https://img.shields.io/github/v/release/farseer-go/collections)
-![Codecov](https://img.shields.io/codecov/c/github/farseer-go/collections)
+[![codecov](https://img.shields.io/codecov/c/github/farseer-go/collections)](https://codecov.io/gh/farseer-go/collections)
 ![](https://img.shields.io/github/languages/code-size/farseer-go/collections)
 ![](https://img.shields.io/github/directory-file-count/farseer-go/collections)
 ![](https://goreportcard.com/badge/github.com/farseer-go/collections)
