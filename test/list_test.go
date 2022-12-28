@@ -62,3 +62,33 @@ func TestList_Value(t *testing.T) {
 	assert.Equal(t, err, nil)
 	assert.Equal(t, vals, `{}`)
 }
+
+func TestScan(t *testing.T) {
+	lst := collections.NewList[int]()
+	lst.Scan("1,2,3")
+	assert.Equal(t, 3, lst.Count())
+	lst = lst.OrderByItem().ToList()
+	assert.Equal(t, 1, lst.Index(0))
+	assert.Equal(t, 2, lst.Index(1))
+	assert.Equal(t, 3, lst.Index(2))
+
+	lst.Scan(nil)
+	assert.Equal(t, 0, lst.Count())
+
+	lst.Scan([]byte("1,2,3"))
+	assert.Equal(t, 3, lst.Count())
+	lst = lst.OrderByItem().ToList()
+	assert.Equal(t, 1, lst.Index(0))
+	assert.Equal(t, 2, lst.Index(1))
+	assert.Equal(t, 3, lst.Index(2))
+
+	assert.NotNil(t, lst.Scan(0))
+}
+
+func TestNil(t *testing.T) {
+	var lst collections.List[int]
+	assert.True(t, lst.IsNil())
+
+	lst = collections.NewList[int]()
+	assert.False(t, lst.IsNil())
+}

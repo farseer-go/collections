@@ -72,6 +72,7 @@ func Test_enumerable_All(t *testing.T) {
 
 func Test_enumerable_Take(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3, 4, 5)
+	assert.Equal(t, 5, lst.Take(100).Count())
 	lst = lst.Take(3).ToList()
 	assert.Equal(t, lst.Count(), 3)
 	array := lst.ToArray()

@@ -1,7 +1,6 @@
 package collections
 
 import (
-	"encoding/json"
 	"github.com/farseer-go/fs/parse"
 )
 
@@ -42,15 +41,15 @@ func (receiver *Collection[T]) RemoveAll(fn func(item T) bool) {
 	}
 }
 
-// MarshalJSON to output non base64 encoded []byte
-func (receiver *Collection[T]) MarshalJSON() ([]byte, error) {
-	if receiver.source == nil {
-		return []byte("null"), nil
-	}
-	return json.Marshal(receiver.source)
-}
-
-// UnmarshalJSON to deserialize []byte
-func (receiver *Collection[T]) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, &receiver.source)
-}
+//// MarshalJSON to output non base64 encoded []byte
+//func (receiver *Collection[T]) MarshalJSON() ([]byte, error) {
+//	if receiver.source == nil {
+//		return []byte("null"), nil
+//	}
+//	return json.Marshal(receiver.source)
+//}
+//
+//// UnmarshalJSON to deserialize []byte
+//func (receiver *Collection[T]) UnmarshalJSON(b []byte) error {
+//	return json.Unmarshal(b, &receiver.source)
+//}
