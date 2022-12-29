@@ -10,7 +10,7 @@ type Collection[T any] struct {
 
 // Add 添加元素
 func (receiver *Collection[T]) Add(item ...T) {
-	if item == nil || len(item) == 0 {
+	if len(item) == 0 {
 		return
 	}
 	*receiver.source = append(*receiver.source, item...)

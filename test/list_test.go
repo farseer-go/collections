@@ -65,17 +65,17 @@ func TestList_Value(t *testing.T) {
 
 func TestScan(t *testing.T) {
 	lst := collections.NewList[int]()
-	lst.Scan("1,2,3")
+	_ = lst.Scan("1,2,3")
 	assert.Equal(t, 3, lst.Count())
 	lst = lst.OrderByItem().ToList()
 	assert.Equal(t, 1, lst.Index(0))
 	assert.Equal(t, 2, lst.Index(1))
 	assert.Equal(t, 3, lst.Index(2))
 
-	lst.Scan(nil)
+	_ = lst.Scan(nil)
 	assert.Equal(t, 0, lst.Count())
 
-	lst.Scan([]byte("1,2,3"))
+	_ = lst.Scan([]byte("1,2,3"))
 	assert.Equal(t, 3, lst.Count())
 	lst = lst.OrderByItem().ToList()
 	assert.Equal(t, 1, lst.Index(0))
