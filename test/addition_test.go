@@ -7,7 +7,7 @@ import (
 )
 
 func TestAddition(t *testing.T) {
-	assert.Equal(t, int(3), collections.Addition(int(1), int(2)))
+	assert.Equal(t, 3, collections.Addition(1, 2))
 	assert.Equal(t, int8(3), collections.Addition(int8(1), int8(2)))
 	assert.Equal(t, int16(3), collections.Addition(int16(1), int16(2)))
 	assert.Equal(t, int32(3), collections.Addition(int32(1), int32(2)))

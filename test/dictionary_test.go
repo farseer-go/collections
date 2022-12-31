@@ -144,9 +144,10 @@ func TestDictionary_Scan(t *testing.T) {
 }
 
 func TestDictionary_MarshalJSON(t *testing.T) {
-	var dic collections.Dictionary[string, string]
-	rtn, err := dic.MarshalJSON()
-	assert.Equal(t, rtn, []byte("null"))
+	dic := collections.NewDictionary[string, string]()
+	dic.Add("a", "1")
+	json, err := dic.MarshalJSON()
+	assert.Equal(t, []byte("{\"a\":\"1\"}"), json)
 	assert.Equal(t, err, nil)
 }
 func TestDictionary_UnmarshalJSON(t *testing.T) {

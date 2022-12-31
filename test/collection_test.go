@@ -43,10 +43,6 @@ func TestCollection_MarshalJSON(t *testing.T) {
 	strjson, _ := lst.MarshalJSON()
 	retjson, _ := json.Marshal(lst)
 	assert.Equal(t, strjson, retjson)
-	lst2 := collections.List[any]{}
-	strjson, err := lst2.MarshalJSON()
-	assert.Equal(t, string(strjson), "null")
-	assert.Equal(t, err, nil)
 }
 
 func TestCollection_UnmarshalJSON(t *testing.T) {

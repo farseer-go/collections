@@ -590,11 +590,11 @@ func TestEnumerable_Empty(t *testing.T) {
 }
 
 func TestEnumerable_ToArray(t *testing.T) {
-	lst1 := collections.List[int]{}
+	lst1 := collections.NewList[int]()
 	assert.Equal(t, lst1.ToArray(), []int{})
 }
 
 func TestEnumerable_Count(t *testing.T) {
-	lst1 := collections.List[int]{}
+	lst1 := collections.NewList[int]()
 	assert.Equal(t, lst1.Count(), 0)
 }
