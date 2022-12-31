@@ -175,9 +175,6 @@ func (receiver Dictionary[TKey, TValue]) MarshalJSON() ([]byte, error) {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	if receiver.source == nil {
-		return []byte("null"), nil
-	}
 	return json.Marshal(receiver.source)
 }
 

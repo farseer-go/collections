@@ -61,10 +61,7 @@ func (receiver Enumerable[T]) Count() int {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	if receiver.source != nil {
-		return len(*receiver.source)
-	}
-	return 0
+	return len(*receiver.source)
 }
 
 // Contains 是否包含元素
@@ -581,9 +578,6 @@ func (receiver Enumerable[T]) ToArray() []T {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	if receiver.source == nil {
-		return []T{}
-	}
 	return *receiver.source
 }
 
@@ -756,9 +750,6 @@ func (receiver Enumerable[T]) MarshalJSON() ([]byte, error) {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	if receiver.source == nil {
-		return []byte("null"), nil
-	}
 	return json.Marshal(receiver.source)
 }
 
