@@ -16,7 +16,10 @@ func Test_enumerable_Any(t *testing.T) {
 }
 
 func Test_enumerable_IsEmpty(t *testing.T) {
-	lst := collections.NewList[int]()
+	var lst collections.List[int]
+	assert.True(t, lst.IsEmpty())
+
+	lst = collections.NewList[int]()
 	assert.True(t, lst.IsEmpty())
 	lst.Add(1)
 	assert.False(t, lst.IsEmpty())
@@ -590,11 +593,11 @@ func TestEnumerable_Empty(t *testing.T) {
 }
 
 func TestEnumerable_ToArray(t *testing.T) {
-	lst1 := collections.NewList[int]()
+	var lst1 collections.List[int]
 	assert.Equal(t, lst1.ToArray(), []int{})
 }
 
 func TestEnumerable_Count(t *testing.T) {
-	lst1 := collections.NewList[int]()
-	assert.Equal(t, lst1.Count(), 0)
+	var lst collections.List[int]
+	assert.Equal(t, 0, lst.Count())
 }
