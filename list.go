@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/farseer-go/fs/parse"
 	"strings"
+	"sync"
 )
 
 // List 集合
@@ -25,20 +26,28 @@ func NewList[T any](source ...T) List[T] {
 
 // AsEnumerable 返回enumerable类型
 func (receiver *List[T]) AsEnumerable() Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	source := *receiver.source
 	return Enumerable[T]{
 		source: &source,
+		lock:   &sync.RWMutex{},
 	}
 }
 
 // New 返回enumerable类型
 func (receiver *List[T]) New() {
 	if receiver.source == nil {
+		var lock sync.RWMutex
 		source := &[]T{}
+
 		receiver.source = source
 		receiver.IList.source = source
 		receiver.IList.Collection.source = source
+		receiver.IList.Collection.lock = &lock
 		receiver.Enumerable.source = source
+		receiver.Enumerable.lock = &lock
 	}
 }
 

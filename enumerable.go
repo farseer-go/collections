@@ -8,24 +8,35 @@ import (
 	"math/rand"
 	"reflect"
 	"strings"
+	"sync"
 )
 
 type Enumerable[T any] struct {
 	source *[]T
+	lock   *sync.RWMutex
 }
 
 // Any 是否存在
 func (receiver Enumerable[T]) Any() bool {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	return len(*receiver.source) > 0
 }
 
 // IsEmpty 集合是为空的
 func (receiver Enumerable[T]) IsEmpty() bool {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	return receiver.source == nil || len(*receiver.source) == 0
 }
 
 // First 查找符合条件的第一个元素
 func (receiver Enumerable[T]) First() T {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	if len(*receiver.source) > 0 {
 		return (*receiver.source)[0]
 	}
@@ -35,6 +46,9 @@ func (receiver Enumerable[T]) First() T {
 
 // Last 集合最后一个元素
 func (receiver Enumerable[T]) Last() T {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	if len(*receiver.source) > 0 {
 		return (*receiver.source)[len(*receiver.source)-1]
 	}
@@ -44,6 +58,9 @@ func (receiver Enumerable[T]) Last() T {
 
 // Count 集合大小
 func (receiver Enumerable[T]) Count() int {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	if receiver.source != nil {
 		return len(*receiver.source)
 	}
@@ -52,6 +69,9 @@ func (receiver Enumerable[T]) Count() int {
 
 // Contains 是否包含元素
 func (receiver Enumerable[T]) Contains(item T) bool {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	for _, t := range *receiver.source {
 		if parse.IsEqual(t, item) {
 			return true
@@ -62,17 +82,23 @@ func (receiver Enumerable[T]) Contains(item T) bool {
 
 // Where 对数据进行筛选
 func (receiver Enumerable[T]) Where(fn func(item T) bool) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	var lst []T
 	for _, item := range *receiver.source {
 		if fn(item) {
 			lst = append(lst, item)
 		}
 	}
-	return Enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // All 是否所有数据都满足fn条件
 func (receiver Enumerable[T]) All(fn func(item T) bool) bool {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	for _, item := range *receiver.source {
 		if !fn(item) {
 			return false
@@ -83,28 +109,37 @@ func (receiver Enumerable[T]) All(fn func(item T) bool) bool {
 
 // Take 返回前多少条数据
 func (receiver Enumerable[T]) Take(count int) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	recordCount := len(*receiver.source)
 	// 总长度比count小，则直接返回全部数据
 	if recordCount < count {
 		return receiver
 	}
 	arr := (*receiver.source)[0:count]
-	return Enumerable[T]{source: &arr}
+	return Enumerable[T]{source: &arr, lock: &sync.RWMutex{}}
 }
 
 // Skip 跳过前多少条记录
 func (receiver Enumerable[T]) Skip(count int) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	recordCount := len(*receiver.source)
 	// 总长度比count小，则返回空数据
 	if recordCount < count {
-		return Enumerable[T]{source: new([]T)}
+		return Enumerable[T]{source: new([]T), lock: &sync.RWMutex{}}
 	}
 	arr := (*receiver.source)[count:]
-	return Enumerable[T]{source: &arr}
+	return Enumerable[T]{source: &arr, lock: &sync.RWMutex{}}
 }
 
 // Sum 求总和
 func (receiver Enumerable[T]) Sum(fn func(item T) any) any {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 	var sum any
 	for index := 0; index < len(lst); index++ {
@@ -115,6 +150,9 @@ func (receiver Enumerable[T]) Sum(fn func(item T) any) any {
 
 // SumItem 求总和
 func (receiver Enumerable[T]) SumItem() T {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 	var sum T
 	for index := 0; index < len(lst); index++ {
@@ -125,6 +163,9 @@ func (receiver Enumerable[T]) SumItem() T {
 
 // Average 求平均数
 func (receiver Enumerable[T]) Average(fn func(item T) any) float64 {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	sum := receiver.Sum(fn)
 	count := len(*receiver.source)
 	return parse.Convert(sum, float64(0)) / parse.Convert(count, float64(0))
@@ -132,6 +173,9 @@ func (receiver Enumerable[T]) Average(fn func(item T) any) float64 {
 
 // AverageItem 求平均数
 func (receiver Enumerable[T]) AverageItem() float64 {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	sum := receiver.Sum(func(item T) any { return item })
 	count := len(*receiver.source)
 	return parse.Convert(sum, float64(0)) / parse.Convert(count, float64(0))
@@ -139,6 +183,9 @@ func (receiver Enumerable[T]) AverageItem() float64 {
 
 // Min 获取最小值
 func (receiver Enumerable[T]) Min(fn func(item T) any) any {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 
 	if len(lst) == 0 {
@@ -156,6 +203,9 @@ func (receiver Enumerable[T]) Min(fn func(item T) any) any {
 
 // MinItem 获取最小值
 func (receiver Enumerable[T]) MinItem() T {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 
 	if len(lst) == 0 {
@@ -174,6 +224,9 @@ func (receiver Enumerable[T]) MinItem() T {
 
 // Max 获取最大值
 func (receiver Enumerable[T]) Max(fn func(item T) any) any {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 
 	if len(lst) == 0 {
@@ -191,6 +244,9 @@ func (receiver Enumerable[T]) Max(fn func(item T) any) any {
 
 // MaxItem 获取最大值
 func (receiver Enumerable[T]) MaxItem() T {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 
 	if len(lst) == 0 {
@@ -209,6 +265,9 @@ func (receiver Enumerable[T]) MaxItem() T {
 
 // GroupBy 将数组进行分组后返回map
 func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) any) {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	mapSliceVal := reflect.ValueOf(mapSlice).Elem()
 	mapSliceType, isMap := types.IsMap(mapSliceVal)
 	if !isMap {
@@ -235,6 +294,9 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 
 // OrderBy 正序排序，fn 返回的是要排序的字段的值
 func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 
 	// 首先拿数组第0个出来做为左边值
@@ -259,11 +321,14 @@ func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
 		}
 	}
 
-	return Enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // OrderByItem 正序排序，fn 返回的是要排序的字段的值
 func (receiver Enumerable[T]) OrderByItem() Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 
 	// 首先拿数组第0个出来做为左边值
@@ -288,11 +353,14 @@ func (receiver Enumerable[T]) OrderByItem() Enumerable[T] {
 		}
 	}
 
-	return Enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // OrderByDescending 倒序排序，fn 返回的是要排序的字段的值
 func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 
 	// 首先拿数组第0个出来做为左边值
@@ -317,11 +385,14 @@ func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[
 		}
 	}
 
-	return Enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // OrderByDescendingItem 倒序排序，fn 返回的是要排序的字段的值
 func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := *receiver.source
 
 	// 首先拿数组第0个出来做为左边值
@@ -345,7 +416,7 @@ func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 			}
 		}
 	}
-	return Enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // Select 筛选子元素字段
@@ -367,6 +438,9 @@ func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 //	})
 //	result: lstSelect = List[string] { "go:1", "go:", "go:2" }
 func (receiver Enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
 	// 切片类型
 	if sliceOrListType, isSlice := types.IsSlice(sliceOrListVal); isSlice {
@@ -410,6 +484,9 @@ func (receiver Enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
 //	})
 //	// result:	lst = List[string] { "1", "2", "3", "4" }
 func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	sliceOrListVal := reflect.ValueOf(sliceOrList).Elem()
 
 	// 切片类型
@@ -454,6 +531,9 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 //	lst.SelectMany(&lst2)
 //	// result:	lst = List[string] { "1", "2", "3", "4" }
 func (receiver Enumerable[T]) SelectManyItem(sliceOrList any) {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	receiver.SelectMany(sliceOrList, func(item T) any {
 		return item
 	})
@@ -461,6 +541,9 @@ func (receiver Enumerable[T]) SelectManyItem(sliceOrList any) {
 
 // ToMap 转成字典
 func (receiver Enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any, getMapValueFunc func(item T) any) {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	mapSliceVal := reflect.ValueOf(mapSlice).Elem()
 	mapSliceType, isMap := types.IsMap(mapSliceVal)
 	if !isMap {
@@ -487,11 +570,17 @@ func (receiver Enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any
 
 // ToList 返回List集合
 func (receiver Enumerable[T]) ToList() List[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	return NewList(*receiver.source...)
 }
 
 // ToArray 转成数组
 func (receiver Enumerable[T]) ToArray() []T {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	if receiver.source == nil {
 		return []T{}
 	}
@@ -500,6 +589,9 @@ func (receiver Enumerable[T]) ToArray() []T {
 
 // ToPageList 数组分页
 func (receiver Enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	pageList := PageList[T]{
 		RecordCount: int64(len(*receiver.source)),
 	}
@@ -538,6 +630,9 @@ func (receiver Enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T
 
 // ToListAny 转成ListAny
 func (receiver Enumerable[T]) ToListAny() ListAny {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	array := receiver.ToArray()
 	lst := NewListAny()
 	for _, item := range array {
@@ -548,34 +643,49 @@ func (receiver Enumerable[T]) ToListAny() ListAny {
 
 // Empty 返回一个新的Empty集合
 func (receiver Enumerable[T]) Empty() Enumerable[T] {
-	return Enumerable[T]{source: &[]T{}}
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	return Enumerable[T]{source: &[]T{}, lock: &sync.RWMutex{}}
 }
 
 // Intersect 两个集合的交集（共同存在的元素）
 func (receiver Enumerable[T]) Intersect(lstRight List[T]) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	var lst []T
 	for _, item := range *receiver.source {
 		if lstRight.Contains(item) {
 			lst = append(lst, item)
 		}
 	}
-	return Enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // Concat 合并两个集合
 func (receiver Enumerable[T]) Concat(lstRight List[T]) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := append(*receiver.source, *lstRight.source...)
-	return Enumerable[T]{source: &lst}
+	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // Union 合并两个集合，并去重
 func (receiver Enumerable[T]) Union(lstRight List[T]) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	union := receiver.Concat(lstRight)
 	return union.Distinct()
 }
 
 // Distinct 集合去重
 func (receiver Enumerable[T]) Distinct() Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := NewList[T]()
 	for _, item := range *receiver.source {
 		if !lst.Contains(item) {
@@ -587,6 +697,9 @@ func (receiver Enumerable[T]) Distinct() Enumerable[T] {
 
 // Except 移除参数中包含的集合元素
 func (receiver Enumerable[T]) Except(lstRight List[T]) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	lst := receiver.ToList()
 	for _, item := range *lstRight.source {
 		lst.Remove(item)
@@ -598,18 +711,27 @@ func (receiver Enumerable[T]) Except(lstRight List[T]) Enumerable[T] {
 // startIndex：起始位置
 // length：从startIndex开始之后的长度
 func (receiver Enumerable[T]) Range(startIndex int, length int) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	newList := (*receiver.source)[startIndex : startIndex+length]
-	return Enumerable[T]{source: &newList}
+	return Enumerable[T]{source: &newList, lock: &sync.RWMutex{}}
 }
 
 // RangeStart 获取切片范围（指定startIndex，不指定endIndex)
 func (receiver Enumerable[T]) RangeStart(startIndex int) Enumerable[T] {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	newList := (*receiver.source)[startIndex:]
-	return Enumerable[T]{source: &newList}
+	return Enumerable[T]{source: &newList, lock: &sync.RWMutex{}}
 }
 
 // Rand 返回随机元素
 func (receiver Enumerable[T]) Rand() T {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	if receiver.Count() < 2 {
 		return receiver.First()
 	}
@@ -619,6 +741,9 @@ func (receiver Enumerable[T]) Rand() T {
 
 // ToString 将集合转成字符串，并用split分隔
 func (receiver Enumerable[T]) ToString(split string) string {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	var arrStr []string
 	for _, item := range *receiver.source {
 		arrStr = append(arrStr, parse.Convert(item, ""))
@@ -628,6 +753,9 @@ func (receiver Enumerable[T]) ToString(split string) string {
 
 // MarshalJSON to output non base64 encoded []byte
 func (receiver Enumerable[T]) MarshalJSON() ([]byte, error) {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	if receiver.source == nil {
 		return []byte("null"), nil
 	}
@@ -636,12 +764,18 @@ func (receiver Enumerable[T]) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON to deserialize []byte
 func (receiver Enumerable[T]) UnmarshalJSON(b []byte) error {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	return json.Unmarshal(b, &receiver.source)
 }
 
 // MapToList 类型转换，比如List[PO] 转换为 List[DO]
 // toList：必须为List类型
 func (receiver Enumerable[T]) MapToList(toList any) {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	toValue := reflect.ValueOf(toList).Elem()
 	// 传进来的，可能不是struct，而是通过反射创建的any
 	if toValue.Kind() == reflect.Ptr || toValue.Kind() == reflect.Interface {
@@ -674,6 +808,9 @@ func (receiver Enumerable[T]) MapToList(toList any) {
 // MapToArray 类型转换，比如List[PO] 转换为 []DO
 // toSlice：必须为切片类型
 func (receiver Enumerable[T]) MapToArray(toSlice any) {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	toSliceValue := reflect.ValueOf(toSlice).Elem()
 	toSliceType, isSlice := types.IsSlice(toSliceValue)
 	if !isSlice {

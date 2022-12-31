@@ -11,16 +11,25 @@ type IList[T any] struct {
 
 // Index 获取第index索引位置的元素
 func (receiver *IList[T]) Index(index int) T {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	return (*receiver.source)[index]
 }
 
 // Set 设置值
 func (receiver *IList[T]) Set(index int, item T) {
+	receiver.lock.Lock()
+	defer receiver.lock.Unlock()
+
 	(*receiver.source)[index] = item
 }
 
 // IndexOf 元素在集合的索引位置
 func (receiver *IList[T]) IndexOf(item T) int {
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	for index, t := range *receiver.source {
 		if parse.IsEqual(t, item) {
 			return index
@@ -31,6 +40,9 @@ func (receiver *IList[T]) IndexOf(item T) int {
 
 // Insert 向第index索引位置插入元素
 func (receiver *IList[T]) Insert(index int, item T) {
+	receiver.lock.Lock()
+	defer receiver.lock.Unlock()
+
 	if index < 0 {
 		panic("index值不能小于0")
 	}
@@ -47,6 +59,9 @@ func (receiver *IList[T]) Insert(index int, item T) {
 
 // RemoveAt 移除指定索引的元素
 func (receiver *IList[T]) RemoveAt(index int) {
+	receiver.lock.Lock()
+	defer receiver.lock.Unlock()
+
 	if index < 0 {
 		panic("index值不能小于0")
 	}
