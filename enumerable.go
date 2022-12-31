@@ -26,6 +26,10 @@ func (receiver Enumerable[T]) Any() bool {
 
 // IsEmpty 集合是为空的
 func (receiver Enumerable[T]) IsEmpty() bool {
+	if receiver.lock == nil {
+		return true
+	}
+
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -58,6 +62,10 @@ func (receiver Enumerable[T]) Last() T {
 
 // Count 集合大小
 func (receiver Enumerable[T]) Count() int {
+	if receiver.lock == nil {
+		return 0
+	}
+
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -575,6 +583,10 @@ func (receiver Enumerable[T]) ToList() List[T] {
 
 // ToArray 转成数组
 func (receiver Enumerable[T]) ToArray() []T {
+	if receiver.lock == nil {
+		return []T{}
+	}
+
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
