@@ -20,6 +20,16 @@ func (receiver *Collection[T]) Add(item ...T) {
 	}
 }
 
+// AddRange 添加元素
+func (receiver *Collection[T]) AddRange(lst Enumerable[T]) {
+	if lst.Count() > 0 {
+		receiver.lock.Lock()
+		defer receiver.lock.Unlock()
+
+		*receiver.source = append(*receiver.source, lst.ToArray()...)
+	}
+}
+
 // Clear 清空集合
 func (receiver *Collection[T]) Clear() {
 	receiver.lock.Lock()
