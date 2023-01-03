@@ -95,12 +95,20 @@ func Test_dictionary_ContainsValue(t *testing.T) {
 }
 
 func TestDictionary_ToMap(t *testing.T) {
-	maps := make(map[string]string)
-	maps["name"] = "steden"
-	maps["age"] = "18"
+	maps := map[string]string{"name": "steden", "age": "18"}
 	dic := collections.NewDictionaryFromMap[string, string](maps)
 	tomap := dic.ToMap()
 
+	assert.Equal(t, len(maps), len(tomap))
+	assert.Equal(t, maps["name"], tomap["name"])
+	assert.Equal(t, maps["age"], tomap["age"])
+}
+
+func TestDictionary_ToReadonlyDictionary(t *testing.T) {
+	maps := map[string]string{"name": "steden", "age": "18"}
+	dic := collections.NewDictionaryFromMap[string, string](maps)
+	readonly := dic.ToReadonlyDictionary()
+	tomap := readonly.ToMap()
 	assert.Equal(t, len(maps), len(tomap))
 	assert.Equal(t, maps["name"], tomap["name"])
 	assert.Equal(t, maps["age"], tomap["age"])
