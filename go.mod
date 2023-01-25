@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/devfeel/mapper v0.7.10
-	github.com/farseer-go/fs v0.6.0
+	github.com/farseer-go/fs v0.6.1-0.20230125073549-bf337aa75be9
 	github.com/stretchr/testify v1.8.1
 )
 
