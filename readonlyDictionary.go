@@ -102,18 +102,21 @@ func (receiver ReadonlyDictionary[TKey, TValue]) ToMap() map[TKey]TValue {
 
 // Value return json value, implement driver.Valuer interface
 func (receiver ReadonlyDictionary[TKey, TValue]) Value() (driver.Value, error) {
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
-
 	if receiver.source == nil {
 		return nil, nil
 	}
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
 	ba, err := receiver.MarshalJSON()
 	return string(ba), err
 }
 
 // MarshalJSON to output non base64 encoded []byte
 func (receiver ReadonlyDictionary[TKey, TValue]) MarshalJSON() ([]byte, error) {
+	if receiver.source == nil || receiver.lock == nil {
+		return []byte("{}"), nil
+	}
+
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -127,6 +130,10 @@ func (receiver ReadonlyDictionary[TKey, TValue]) GormDataType() string {
 
 // IsNil 是否未初始化
 func (receiver ReadonlyDictionary[TKey, TValue]) IsNil() bool {
+	if receiver.lock == nil {
+		return true
+	}
+
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 

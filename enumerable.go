@@ -759,16 +759,19 @@ func (receiver Enumerable[T]) ToString(split string) string {
 
 // MarshalJSON to output non base64 encoded []byte
 func (receiver Enumerable[T]) MarshalJSON() ([]byte, error) {
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
-
+	if receiver.lock != nil {
+		receiver.lock.RLock()
+		defer receiver.lock.RUnlock()
+	}
 	return json.Marshal(receiver.source)
 }
 
 // UnmarshalJSON to deserialize []byte
 func (receiver Enumerable[T]) UnmarshalJSON(b []byte) error {
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
+	if receiver.lock != nil {
+		receiver.lock.RLock()
+		defer receiver.lock.RUnlock()
+	}
 
 	return json.Unmarshal(b, &receiver.source)
 }

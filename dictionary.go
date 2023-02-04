@@ -76,18 +76,15 @@ func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
 		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", val))
 	}
 
-	t := map[TKey]TValue{}
-	err := json.Unmarshal(ba, &t)
-	receiver.source = t
-	return err
+	return receiver.UnmarshalJSON(ba)
 }
 
 // UnmarshalJSON to deserialize []byte
-func (receiver *Dictionary[TKey, TValue]) UnmarshalJSON(b []byte) error {
-	receiver.lock.Lock()
-	defer receiver.lock.Unlock()
-
-	return json.Unmarshal(b, &receiver.source)
+func (receiver *Dictionary[TKey, TValue]) UnmarshalJSON(ba []byte) error {
+	t := map[TKey]TValue{}
+	err := json.Unmarshal(ba, &t)
+	*receiver = NewDictionaryFromMap(t)
+	return err
 }
 
 // ToReadonlyDictionary 转成ReadonlyDictionary对象
