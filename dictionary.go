@@ -75,7 +75,6 @@ func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
 	default:
 		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", val))
 	}
-
 	return receiver.UnmarshalJSON(ba)
 }
 
