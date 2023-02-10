@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/farseer-go/collections"
@@ -188,4 +189,14 @@ func TestDictionary_IsNil(t *testing.T) {
 	val = dic2.IsNil()
 	assert.Equal(t, val, false)
 
+}
+
+func TestDictionaryJson(t *testing.T) {
+	var dic collections.Dictionary[int, int]
+	assert.True(t, dic.IsNil())
+	marshal, _ := json.Marshal(dic)
+	assert.Equal(t, "{}", string(marshal))
+
+	_ = json.Unmarshal([]byte("{}"), &dic)
+	assert.False(t, dic.IsNil())
 }

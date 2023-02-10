@@ -2,6 +2,7 @@ package collections
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/farseer-go/fs/parse"
@@ -90,4 +91,25 @@ func (receiver *List[T]) Scan(val any) error {
 // IsNil 是否未初始化
 func (receiver *List[T]) IsNil() bool {
 	return receiver.source == nil
+}
+
+// MarshalJSON to output non base64 encoded []byte
+// 此处不能用指针，否则json序列化时不执行
+func (receiver List[T]) MarshalJSON() ([]byte, error) {
+	if receiver.IsNil() {
+		return []byte("{}"), nil
+	}
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+	return json.Marshal(receiver.source)
+}
+
+// UnmarshalJSON to deserialize []byte
+func (receiver *List[T]) UnmarshalJSON(b []byte) error {
+	if receiver.IsNil() {
+		receiver.New()
+	}
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+	return json.Unmarshal(b, &receiver.source)
 }

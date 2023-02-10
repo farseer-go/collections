@@ -112,6 +112,7 @@ func (receiver ReadonlyDictionary[TKey, TValue]) Value() (driver.Value, error) {
 }
 
 // MarshalJSON to output non base64 encoded []byte
+// 此处不能用指针，否则json序列化时不执行
 func (receiver ReadonlyDictionary[TKey, TValue]) MarshalJSON() ([]byte, error) {
 	if receiver.source == nil || receiver.lock == nil {
 		return []byte("{}"), nil

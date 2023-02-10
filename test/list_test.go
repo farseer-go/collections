@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"github.com/farseer-go/collections"
 	"github.com/farseer-go/fs/types"
 	"github.com/stretchr/testify/assert"
@@ -90,5 +91,14 @@ func TestNil(t *testing.T) {
 	assert.True(t, lst.IsNil())
 
 	lst = collections.NewList[int]()
+	assert.False(t, lst.IsNil())
+}
+
+func TestListJson(t *testing.T) {
+	var lst collections.List[int]
+	marshal, _ := json.Marshal(lst)
+	assert.Equal(t, "{}", string(marshal))
+
+	_ = json.Unmarshal([]byte("{}"), &lst)
 	assert.False(t, lst.IsNil())
 }
