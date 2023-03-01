@@ -56,6 +56,10 @@ func (receiver ReadonlyDictionary[TKey, TValue]) Keys() List[TKey] {
 
 // Count 获取字典数量
 func (receiver ReadonlyDictionary[TKey, TValue]) Count() int {
+	if receiver.lock == nil {
+		return 0
+	}
+
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -105,8 +109,6 @@ func (receiver ReadonlyDictionary[TKey, TValue]) Value() (driver.Value, error) {
 	if receiver.source == nil {
 		return nil, nil
 	}
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
 	ba, err := receiver.MarshalJSON()
 	return string(ba), err
 }
