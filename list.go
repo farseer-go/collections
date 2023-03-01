@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/farseer-go/fs/parse"
-	"strings"
 	"sync"
 )
 
@@ -78,14 +76,7 @@ func (receiver *List[T]) Scan(val any) error {
 		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", val))
 	}
 
-	// 按,号分隔
-	*receiver = NewList[T]()
-	dataSplits := strings.Split(string(ba), ",")
-	var defValue T
-	for _, data := range dataSplits {
-		receiver.Add(parse.Convert(data, defValue))
-	}
-	return nil
+	return receiver.UnmarshalJSON(ba)
 }
 
 // IsNil 是否未初始化
@@ -97,7 +88,7 @@ func (receiver *List[T]) IsNil() bool {
 // 此处不能用指针，否则json序列化时不执行
 func (receiver List[T]) MarshalJSON() ([]byte, error) {
 	if receiver.IsNil() {
-		return []byte("{}"), nil
+		return []byte("[]"), nil
 	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
@@ -111,5 +102,5 @@ func (receiver *List[T]) UnmarshalJSON(b []byte) error {
 	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
-	return json.Unmarshal(b, &receiver.source)
+	return json.Unmarshal(b, receiver.source)
 }

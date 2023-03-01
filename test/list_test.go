@@ -66,7 +66,7 @@ func TestList_Value(t *testing.T) {
 
 func TestScan(t *testing.T) {
 	lst := collections.NewList[int]()
-	_ = lst.Scan("1,2,3")
+	_ = lst.Scan("[1,2,3]")
 	assert.Equal(t, 3, lst.Count())
 	lst = lst.OrderByItem().ToList()
 	assert.Equal(t, 1, lst.Index(0))
@@ -76,7 +76,7 @@ func TestScan(t *testing.T) {
 	_ = lst.Scan(nil)
 	assert.Equal(t, 0, lst.Count())
 
-	_ = lst.Scan([]byte("1,2,3"))
+	_ = lst.Scan([]byte("[1,2,3]"))
 	assert.Equal(t, 3, lst.Count())
 	lst = lst.OrderByItem().ToList()
 	assert.Equal(t, 1, lst.Index(0))
@@ -97,8 +97,8 @@ func TestNil(t *testing.T) {
 func TestListJson(t *testing.T) {
 	var lst collections.List[int]
 	marshal, _ := json.Marshal(lst)
-	assert.Equal(t, "{}", string(marshal))
+	assert.Equal(t, "[]", string(marshal))
 
-	_ = json.Unmarshal([]byte("{}"), &lst)
+	_ = json.Unmarshal([]byte("[]"), &lst)
 	assert.False(t, lst.IsNil())
 }

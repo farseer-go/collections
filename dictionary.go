@@ -62,6 +62,7 @@ func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
 		receiver.lock.Lock()
 		defer receiver.lock.Unlock()
 	}
+
 	if val == nil {
 		*receiver = NewDictionary[TKey, TValue]()
 		return nil
