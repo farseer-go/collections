@@ -189,6 +189,9 @@ func TestDictionary_IsNil(t *testing.T) {
 	val = dic2.IsNil()
 	assert.Equal(t, val, false)
 
+	var dicNil collections.Dictionary[string, string]
+	assert.Equal(t, 0, dicNil.Count())
+
 }
 
 func TestDictionaryJson(t *testing.T) {
