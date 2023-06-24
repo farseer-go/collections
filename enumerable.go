@@ -817,3 +817,10 @@ func (receiver Enumerable[T]) MapToArray(toSlice any) {
 		toSliceValue.Set(value)
 	}
 }
+
+func (receiver Enumerable[T]) Foreach(itemFn func(item *T)) {
+	for i := 0; i < len(*receiver.source); i++ {
+		item := &(*receiver.source)[i]
+		itemFn(item)
+	}
+}

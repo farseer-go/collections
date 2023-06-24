@@ -601,3 +601,15 @@ func TestEnumerable_Count(t *testing.T) {
 	var lst collections.List[int]
 	assert.Equal(t, 0, lst.Count())
 }
+
+func TestEnumerable_Foreach(t *testing.T) {
+	lst := collections.NewList(0, 0, 0, 0)
+	index := 0
+	lst.Foreach(func(item *int) {
+		*item = index
+		index++
+	})
+	for i := 0; i < lst.Count(); i++ {
+		assert.Equal(t, i, lst.Index(i))
+	}
+}
