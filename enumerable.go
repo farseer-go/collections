@@ -818,6 +818,14 @@ func (receiver Enumerable[T]) MapToArray(toSlice any) {
 	}
 }
 
+// For 遍历操作
+func (receiver Enumerable[T]) For(itemFn func(index int, item *T)) {
+	for i := 0; i < len(*receiver.source); i++ {
+		item := &(*receiver.source)[i]
+		itemFn(i, item)
+	}
+}
+
 // Foreach for range操作
 func (receiver Enumerable[T]) Foreach(itemFn func(item *T)) {
 	for i := 0; i < len(*receiver.source); i++ {
@@ -828,8 +836,14 @@ func (receiver Enumerable[T]) Foreach(itemFn func(item *T)) {
 
 // Parallel for range 并行操作
 func (receiver Enumerable[T]) Parallel(itemFn func(item *T)) {
+	var wg sync.WaitGroup
+	wg.Add(len(*receiver.source))
 	for i := 0; i < len(*receiver.source); i++ {
 		item := &(*receiver.source)[i]
-		go itemFn(item)
+		go func() {
+			defer wg.Done()
+			itemFn(item)
+		}()
 	}
+	wg.Wait()
 }

@@ -602,6 +602,17 @@ func TestEnumerable_Count(t *testing.T) {
 	assert.Equal(t, 0, lst.Count())
 }
 
+func TestEnumerable_For(t *testing.T) {
+	lst := collections.NewList(0, 0, 0, 0)
+	lst.For(func(index int, item *int) {
+		*item = index
+		index++
+	})
+	for i := 0; i < lst.Count(); i++ {
+		assert.Equal(t, i, lst.Index(i))
+	}
+}
+
 func TestEnumerable_Foreach(t *testing.T) {
 	lst := collections.NewList(0, 0, 0, 0)
 	index := 0
@@ -609,7 +620,17 @@ func TestEnumerable_Foreach(t *testing.T) {
 		*item = index
 		index++
 	})
+
 	for i := 0; i < lst.Count(); i++ {
 		assert.Equal(t, i, lst.Index(i))
 	}
+}
+
+func TestEnumerable_Parallel(t *testing.T) {
+	lst := collections.NewList(1, 2, 3, 3)
+	sum := 0
+	lst.Parallel(func(item *int) {
+		sum += *item
+	})
+	assert.Equal(t, sum, lst.SumItem())
 }
