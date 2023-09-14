@@ -20,8 +20,8 @@ func TestList_AsEnumerable(t *testing.T) {
 func TestReflectItemType(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3)
 	lstType := reflect.TypeOf(lst)
-	assert.Equal(t, reflect.TypeOf(1), collections.ReflectItemType(lstType))
-	assert.NotEqual(t, reflect.TypeOf(true), collections.ReflectItemType(lstType))
+	assert.Equal(t, reflect.TypeOf(1), types.GetListItemType(lstType))
+	assert.NotEqual(t, reflect.TypeOf(true), types.GetListItemType(lstType))
 }
 
 func TestReflectIsList(t *testing.T) {
@@ -45,7 +45,7 @@ func TestReflectIsList(t *testing.T) {
 func TestReflectToArray(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3)
 	lstValue := reflect.ValueOf(lst)
-	arr := collections.ReflectToArray(lstValue)
+	arr := types.ListToArray(lstValue)
 	assert.Equal(t, 3, len(arr))
 	assert.Equal(t, 1, arr[0])
 	assert.Equal(t, 2, arr[1])

@@ -457,10 +457,10 @@ func (receiver Enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
 	}
 	if sliceOrListType, isList := types.IsList(sliceOrListVal); isList {
 		// 初始化
-		value := ReflectNew(sliceOrListType)
+		value := types.ListNew(sliceOrListType)
 
 		for _, item := range *receiver.source {
-			ReflectAdd(&value, fn(item))
+			types.ListAdd(&value, fn(item))
 		}
 		sliceOrListVal.Set(value.Elem())
 		return
@@ -508,10 +508,10 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 	}
 	if sliceOrListType, isList := types.IsList(sliceOrListVal); isList {
 		// 初始化
-		value := ReflectNew(sliceOrListType)
+		value := types.ListNew(sliceOrListType)
 
 		for _, item := range *receiver.source {
-			ReflectAdd(&value, fn(item))
+			types.ListAdd(&value, fn(item))
 		}
 		sliceOrListVal.Set(value.Elem())
 		return
@@ -773,19 +773,19 @@ func (receiver Enumerable[T]) MapToList(toList any) {
 	}
 
 	// 拿到数组类型后，先mapper到数组
-	destToArrayType := ReflectItemArrayType(listType)
+	destToArrayType := types.GetListItemArrayType(listType)
 
 	// 只有结构数组，才能用mapper进行转换
 	destArr := reflect.New(destToArrayType).Interface()
 	// 初始化集合
-	newValue := ReflectNew(listType)
+	newValue := types.ListNew(listType)
 	if destToArrayType.Elem().Kind() == reflect.Struct {
 		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
 		// 将数组添加到集合
-		ReflectAdd(&newValue, destArr)
+		types.ListAdd(&newValue, destArr)
 	} else {
 		for _, item := range *receiver.source {
-			ReflectAdd(&newValue, item)
+			types.ListAdd(&newValue, item)
 		}
 	}
 	reflect.ValueOf(toList).Elem().Set(newValue.Elem())
