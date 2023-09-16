@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/farseer-go/fs/parse"
 	"sync"
 )
 
@@ -13,6 +14,11 @@ type List[T any] struct {
 	source        *[]T // 集合
 	IList[T]           // 对集合做修改操作
 	Enumerable[T]      // 对集合做读操作
+}
+
+// ToList 将arr按,号分隔，转换成List[T]
+func ToList[T any](arr string) List[T] {
+	return parse.Convert(arr, NewList[T]())
 }
 
 // NewList 创建集合
