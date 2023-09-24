@@ -239,7 +239,8 @@ func (receiver Enumerable[T]) AverageItem() float64 {
 // Min 获取最小值
 func (receiver Enumerable[T]) Min(fn func(item T) any) any {
 	if receiver.lock == nil {
-		return 0
+		var t T
+		return fn(t) // 不能直接返回0
 	}
 
 	receiver.lock.RLock()
@@ -248,7 +249,8 @@ func (receiver Enumerable[T]) Min(fn func(item T) any) any {
 	lst := *receiver.source
 
 	if len(lst) == 0 {
-		return 0
+		var t T
+		return fn(t) // 不能直接返回0
 	}
 	minValue := fn(lst[0])
 	for index := 1; index < len(lst); index++ {
@@ -289,7 +291,8 @@ func (receiver Enumerable[T]) MinItem() T {
 // Max 获取最大值
 func (receiver Enumerable[T]) Max(fn func(item T) any) any {
 	if receiver.lock == nil {
-		return 0
+		var t T
+		return fn(t) // 不能直接返回0
 	}
 
 	receiver.lock.RLock()
@@ -298,8 +301,10 @@ func (receiver Enumerable[T]) Max(fn func(item T) any) any {
 	lst := *receiver.source
 
 	if len(lst) == 0 {
-		return 0
+		var t T
+		return fn(t) // 不能直接返回0
 	}
+
 	maxValue := fn(lst[0])
 	for index := 1; index < len(lst); index++ {
 		value := fn(lst[index])
