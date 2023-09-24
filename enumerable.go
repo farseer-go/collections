@@ -649,7 +649,7 @@ func (receiver Enumerable[T]) ToMap(mapSlice any, getMapKeyFunc func(item T) any
 		panic("mapSlice入参必须为map类型")
 	}
 
-	// make....
+	// make.... var m map[k]v = make(map[k]v)
 	mapSliceVal.Set(reflect.MakeMap(mapSliceType))
 
 	for _, item := range *receiver.source {
