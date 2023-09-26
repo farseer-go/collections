@@ -523,6 +523,19 @@ func Test_enumerable_Distinct(t *testing.T) {
 	assert.Equal(t, array[4], 5)
 }
 
+func Test_enumerable_Reverse(t *testing.T) {
+	lst1 := collections.NewList(1, 2, 3, 4, 5)
+	lst2 := lst1.Reverse()
+
+	assert.Equal(t, lst2.Count(), lst1.Count())
+	array := lst2.ToArray()
+	assert.Equal(t, array[0], 5)
+	assert.Equal(t, array[1], 4)
+	assert.Equal(t, array[2], 3)
+	assert.Equal(t, array[3], 2)
+	assert.Equal(t, array[4], 1)
+}
+
 func Test_enumerable_Except(t *testing.T) {
 	lst1 := collections.NewList(1, 2, 3)
 	lst2 := collections.NewList(3, 4, 5)

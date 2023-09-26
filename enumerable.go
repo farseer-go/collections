@@ -829,6 +829,22 @@ func (receiver Enumerable[T]) Distinct() Enumerable[T] {
 	return lst.Enumerable
 }
 
+// Reverse 集合反转
+func (receiver Enumerable[T]) Reverse() Enumerable[T] {
+	if receiver.lock == nil {
+		return receiver
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	lst := NewList[T]()
+	for i := len(*receiver.source) - 1; i >= 0; i-- {
+		lst.Add((*receiver.source)[i])
+	}
+	return lst.Enumerable
+}
+
 // Except 移除参数中包含的集合元素
 func (receiver Enumerable[T]) Except(lstRight List[T]) Enumerable[T] {
 	if receiver.lock == nil {
