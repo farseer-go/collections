@@ -44,7 +44,7 @@ func CompareLeftGreaterThanRight(leftValue any, rightValue any) bool {
 		for i := 0; i < len(strLeft); i++ {
 			// 右边字符串比较短，则右边排前面
 			if len(strRight) == i {
-				return false
+				return true
 			}
 			if strLeft[i] == strRight[i] {
 				continue
