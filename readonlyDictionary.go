@@ -143,6 +143,11 @@ func (receiver ReadonlyDictionary[TKey, TValue]) IsNil() bool {
 	return receiver.source == nil
 }
 
+// ToDictionary 返回只写字典
+func (receiver ReadonlyDictionary[TKey, TValue]) ToDictionary() Dictionary[TKey, TValue] {
+	return NewDictionaryFromMap(receiver.source)
+}
+
 //// GormDBDataType gorm db data type
 //func (Dictionary[TKey, TValue]) GormDBDataType(db *gorm.DB, field *schema.Field) string {
 //	switch db.Dialector.Name() {
