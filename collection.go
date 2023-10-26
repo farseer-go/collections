@@ -30,6 +30,26 @@ func (receiver *Collection[T]) AddRange(lst Enumerable[T]) {
 	}
 }
 
+// AddRange 添加元素
+func (receiver *Collection[T]) AddList(lst List[T]) {
+	if lst.Count() > 0 {
+		receiver.lock.Lock()
+		defer receiver.lock.Unlock()
+
+		*receiver.source = append(*receiver.source, lst.ToArray()...)
+	}
+}
+
+// AddRange 添加元素
+func (receiver *Collection[T]) AddArray(arr []T) {
+	if len(arr) > 0 {
+		receiver.lock.Lock()
+		defer receiver.lock.Unlock()
+
+		*receiver.source = append(*receiver.source, arr...)
+	}
+}
+
 // Clear 清空集合
 func (receiver *Collection[T]) Clear() {
 	receiver.lock.Lock()
