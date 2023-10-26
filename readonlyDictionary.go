@@ -24,6 +24,9 @@ func NewReadonlyDictionary[TKey comparable, TValue any]() ReadonlyDictionary[TKe
 
 // NewReadonlyDictionaryFromMap 创建一个字典
 func NewReadonlyDictionaryFromMap[TKey comparable, TValue any](source map[TKey]TValue) ReadonlyDictionary[TKey, TValue] {
+	if source == nil {
+		source = make(map[TKey]TValue)
+	}
 	return ReadonlyDictionary[TKey, TValue]{
 		source: source,
 		lock:   &sync.RWMutex{},
