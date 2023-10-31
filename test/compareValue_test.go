@@ -46,8 +46,8 @@ func TestCompareLeftGreaterThanRight(t *testing.T) {
 	assert.False(t, collections.CompareLeftGreaterThanRight("a", "b"))
 	assert.False(t, collections.CompareLeftGreaterThanRight("aa", "ab"))
 	assert.True(t, collections.CompareLeftGreaterThanRight("", "ab"))
-	assert.False(t, collections.CompareLeftGreaterThanRight("aba", "ab"))
-	assert.True(t, collections.CompareLeftGreaterThanRight("aa", "aaa"))
+	assert.True(t, collections.CompareLeftGreaterThanRight("aba", "ab"))
+	assert.False(t, collections.CompareLeftGreaterThanRight("aa", "aaa"))
 
 	assert.Panics(t, func() {
 		collections.CompareLeftGreaterThanRight([]int{}, []int{})

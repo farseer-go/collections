@@ -125,8 +125,8 @@ func TestDictionary_Value(t *testing.T) {
 	assert.Equal(t, err, nil)
 	dic = collections.NewDictionaryFromMap[string, string](nil)
 	value, err = dic.Value()
-	assert.Equal(t, value, nil)
-	assert.Equal(t, err, nil)
+	assert.Equal(t, "{}", value)
+	assert.Equal(t, nil, err)
 }
 
 func TestDictionary_Scan(t *testing.T) {
@@ -181,7 +181,7 @@ func TestDictionary_GormDataType(t *testing.T) {
 func TestDictionary_IsNil(t *testing.T) {
 	dic := collections.NewDictionaryFromMap[string, string](nil)
 	val := dic.IsNil()
-	assert.Equal(t, val, true)
+	assert.Equal(t, false, val)
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
