@@ -9,9 +9,10 @@ import (
 
 func Test_collection_Count(t *testing.T) {
 	lst := collections.NewList[int]()
-	lst.Add(1, 2, 3) // lst = 1, 2, 3
-	lst.Insert(1, 8) // lst = 1, 8, 2, 3
-	assert.Equal(t, 4, lst.Count())
+	lst.Insert(0, 0) // lst = 0
+	lst.Add(1, 2, 3) // lst = 0, 1, 2, 3
+	lst.Insert(1, 8) // lst = 0, 8, 1, 2, 3
+	assert.Equal(t, 5, lst.Count())
 }
 
 func Test_collection_Add(t *testing.T) {

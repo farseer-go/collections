@@ -46,7 +46,7 @@ func (receiver *IList[T]) Insert(index int, item T) {
 	if index < 0 {
 		panic("index值不能小于0")
 	}
-	if index >= len(*receiver.source) {
+	if index > len(*receiver.source) {
 		panic("index值不能超出集合的长度")
 	}
 
