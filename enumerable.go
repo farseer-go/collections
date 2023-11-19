@@ -392,10 +392,10 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 				arrValues := types.ListToArray(findMapValue)
 				findMapValue = types.ListNew(mapValueItemType)
 				for _, value := range arrValues {
-					types.ListAdd(&findMapValue, value)
+					types.ListAdd(findMapValue, value)
 				}
 			}
-			types.ListAdd(&findMapValue, item)
+			types.ListAdd(findMapValue, item)
 			mapSliceVal.SetMapIndex(key, findMapValue.Elem())
 		} else {
 			mapValue := reflect.Append(findMapValue, reflect.ValueOf(item))
@@ -582,7 +582,7 @@ func (receiver Enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
 		value := types.ListNew(sliceOrListType)
 
 		for _, item := range *receiver.source {
-			types.ListAdd(&value, fn(item))
+			types.ListAdd(value, fn(item))
 		}
 		sliceOrListVal.Set(value.Elem())
 		return
@@ -636,7 +636,7 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 		value := types.ListNew(sliceOrListType)
 
 		for _, item := range *receiver.source {
-			types.ListAdd(&value, fn(item))
+			types.ListAdd(value, fn(item))
 		}
 		sliceOrListVal.Set(value.Elem())
 		return
@@ -981,10 +981,10 @@ func (receiver Enumerable[T]) MapToList(toList any) {
 	if destToArrayType.Elem().Kind() == reflect.Struct {
 		_ = mapper.MapperSlice(receiver.ToArray(), destArr)
 		// 将数组添加到集合
-		types.ListAdd(&newValue, destArr)
+		types.ListAdd(newValue, destArr)
 	} else {
 		for _, item := range *receiver.source {
-			types.ListAdd(&newValue, item)
+			types.ListAdd(newValue, item)
 		}
 	}
 	reflect.ValueOf(toList).Elem().Set(newValue.Elem())
