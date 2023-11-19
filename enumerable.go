@@ -342,6 +342,16 @@ func (receiver Enumerable[T]) MaxItem() T {
 }
 
 // GroupBy 将数组进行分组后返回map
+//
+//	var lstMap map[string][]testItem
+//	lst.GroupBy(&lstMap, func(item testItem) any {
+//		return item.name
+//	})
+//	or
+//	var lstMap map[string]collections.List[testItem]
+//	lst.GroupBy(&lstMap, func(item testItem) any {
+//		return item.name
+//	})
 func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) any) {
 	if receiver.lock == nil {
 		return
@@ -354,22 +364,43 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 	if !isMap {
 		panic("mapSlice入参必须为map类型")
 	}
+	// mapSlice的Value是切片还是List类型
+	mapValueItemType := mapSliceType.Elem()
+	_, mapValueIsListType := types.IsListByType(mapValueItemType)
 
 	// make....
 	mapSliceVal.Set(reflect.MakeMap(mapSliceType))
 
+	nilValueOf := reflect.ValueOf(nil)
 	for _, item := range *receiver.source {
 		// 生成key
 		key := reflect.ValueOf(getMapKeyFunc(item))
 		// 根据key，找到map的value
 		findMapValue := mapSliceVal.MapIndex(key)
 		// nil说明map不存在这个key
-		if findMapValue == reflect.ValueOf(nil) {
-			findMapValue = reflect.MakeSlice(mapSliceType.Elem(), 0, 0)
-			mapSliceVal.SetMapIndex(key, findMapValue)
+		if findMapValue == nilValueOf {
+			// List集合
+			if mapValueIsListType {
+				findMapValue = types.ListNew(mapValueItemType)
+			} else {
+				findMapValue = reflect.MakeSlice(mapValueItemType, 0, 0)
+			}
 		}
-		mapValue := reflect.Append(findMapValue, reflect.ValueOf(item))
-		mapSliceVal.SetMapIndex(key, mapValue)
+		// List集合
+		if mapValueIsListType {
+			if findMapValue.Kind() != reflect.Pointer {
+				arrValues := types.ListToArray(findMapValue)
+				findMapValue = types.ListNew(mapValueItemType)
+				for _, value := range arrValues {
+					types.ListAdd(&findMapValue, value)
+				}
+			}
+			types.ListAdd(&findMapValue, item)
+			mapSliceVal.SetMapIndex(key, findMapValue.Elem())
+		} else {
+			mapValue := reflect.Append(findMapValue, reflect.ValueOf(item))
+			mapSliceVal.SetMapIndex(key, mapValue)
+		}
 	}
 }
 

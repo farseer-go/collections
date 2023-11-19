@@ -173,17 +173,41 @@ func Test_enumerable_GroupBy(t *testing.T) {
 		age  int
 	}
 	lst := collections.NewList[testItem](testItem{name: "steden", age: 36}, testItem{name: "steden", age: 18}, testItem{name: "steden2", age: 40})
-	var lstMap map[string][]testItem
+	var arrMap map[string][]testItem
+	lst.GroupBy(&arrMap, func(item testItem) any {
+		return item.name
+	})
+
+	assert.Equal(t, len(arrMap), 2)
+
+	assert.Equal(t, len(arrMap["steden"]), 2)
+	assert.Equal(t, arrMap["steden"][0].age, 36)
+	assert.Equal(t, arrMap["steden"][1].age, 18)
+
+	assert.Equal(t, len(arrMap["steden2"]), 1)
+	assert.Equal(t, arrMap["steden2"][0].age, 40)
+
+	assert.Panics(t, func() {
+		var arr []string
+		lst.GroupBy(&arr, func(item testItem) any {
+			return item.name
+		})
+	})
+
+	var lstMap map[string]collections.List[testItem]
 	lst.GroupBy(&lstMap, func(item testItem) any {
 		return item.name
 	})
 
 	assert.Equal(t, len(lstMap), 2)
-	assert.Equal(t, len(lstMap["steden"]), 2)
-	assert.Equal(t, len(lstMap["steden2"]), 1)
-	assert.Equal(t, lstMap["steden"][0].age, 36)
-	assert.Equal(t, lstMap["steden"][1].age, 18)
-	assert.Equal(t, lstMap["steden2"][0].age, 40)
+	stedenList := lstMap["steden"]
+	assert.Equal(t, stedenList.Count(), 2)
+	assert.Equal(t, stedenList.Index(0).age, 36)
+	assert.Equal(t, stedenList.Index(1).age, 18)
+
+	steden2List := lstMap["steden2"]
+	assert.Equal(t, steden2List.Count(), 1)
+	assert.Equal(t, steden2List.Index(0).age, 40)
 
 	assert.Panics(t, func() {
 		var arr []string
