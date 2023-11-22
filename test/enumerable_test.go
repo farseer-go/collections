@@ -4,6 +4,7 @@ import (
 	"github.com/farseer-go/collections"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
+	"sync"
 	"testing"
 	"time"
 )
@@ -664,10 +665,13 @@ func TestEnumerable_Foreach(t *testing.T) {
 }
 
 func TestEnumerable_Parallel(t *testing.T) {
+	lock := sync.RWMutex{}
 	lst := collections.NewList(1, 2, 3, 3)
 	sum := 0
 	lst.Parallel(func(item *int) {
+		lock.Lock()
 		sum += *item
+		lock.Unlock()
 	})
 	assert.Equal(t, sum, lst.SumItem())
 }
