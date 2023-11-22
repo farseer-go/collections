@@ -131,7 +131,7 @@ func (receiver ReadonlyDictionary[TKey, TValue]) MarshalJSON() ([]byte, error) {
 
 // GormDataType gorm common data type
 func (receiver ReadonlyDictionary[TKey, TValue]) GormDataType() string {
-	return "jsonmap"
+	return "json"
 }
 
 // IsNil 是否未初始化

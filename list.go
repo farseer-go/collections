@@ -110,3 +110,8 @@ func (receiver *List[T]) UnmarshalJSON(b []byte) error {
 	defer receiver.lock.RUnlock()
 	return json.Unmarshal(b, receiver.source)
 }
+
+// GormDataType gorm common data type
+func (receiver *List[T]) GormDataType() string {
+	return "json"
+}
