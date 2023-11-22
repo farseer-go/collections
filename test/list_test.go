@@ -102,3 +102,9 @@ func TestListJson(t *testing.T) {
 	_ = json.Unmarshal([]byte("[]"), &lst)
 	assert.False(t, lst.IsNil())
 }
+
+func TestList_GormDataType(t *testing.T) {
+	lst := collections.NewList[int]()
+	val := lst.GormDataType()
+	assert.Equal(t, val, "json")
+}

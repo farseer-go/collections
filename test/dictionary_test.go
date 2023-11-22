@@ -175,7 +175,7 @@ func TestDictionary_UnmarshalJSON(t *testing.T) {
 func TestDictionary_GormDataType(t *testing.T) {
 	dic := collections.NewDictionary[string, string]()
 	val := dic.GormDataType()
-	assert.Equal(t, val, "jsonmap")
+	assert.Equal(t, val, "json")
 }
 
 func TestDictionary_IsNil(t *testing.T) {
