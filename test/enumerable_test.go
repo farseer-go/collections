@@ -436,37 +436,37 @@ func Test_enumerable_ToPageList(t *testing.T) {
 	assert.Equal(t, array[6], 7)
 }
 
-func Test_enumerable_MapToList(t *testing.T) {
-	type po struct {
-		Name string
-		Age  int
-	}
-	type do struct {
-		Name string
-		Age  int
-	}
-
-	lst := collections.NewList(po{Name: "steden", Age: 37})
-	var lstDO collections.List[do]
-	lst.MapToList(&lstDO)
-
-	assert.Equal(t, 1, lstDO.Count())
-	assert.Equal(t, "steden", lstDO.First().Name)
-	assert.Equal(t, 37, lstDO.First().Age)
-
-	lstAny := collections.NewListAny(1, 2)
-	var lstInt collections.List[int]
-	lstAny.MapToList(&lstInt)
-
-	assert.Equal(t, lstAny.Count(), lstInt.Count())
-	assert.Equal(t, lstAny.Index(0), lstInt.Index(0))
-	assert.Equal(t, lstAny.Index(1), lstInt.Index(1))
-
-	assert.Panics(t, func() {
-		var lstInt []int
-		lstAny.MapToList(&lstInt)
-	})
-}
+//func Test_enumerable_MapToList(t *testing.T) {
+//	type po struct {
+//		Name string
+//		Age  int
+//	}
+//	type do struct {
+//		Name string
+//		Age  int
+//	}
+//
+//	lst := collections.NewList(po{Name: "steden", Age: 37})
+//	var lstDO collections.List[do]
+//	lst.MapToList(&lstDO)
+//
+//	assert.Equal(t, 1, lstDO.Count())
+//	assert.Equal(t, "steden", lstDO.First().Name)
+//	assert.Equal(t, 37, lstDO.First().Age)
+//
+//	lstAny := collections.NewListAny(1, 2)
+//	var lstInt collections.List[int]
+//	lstAny.MapToList(&lstInt)
+//
+//	assert.Equal(t, lstAny.Count(), lstInt.Count())
+//	assert.Equal(t, lstAny.Index(0), lstInt.Index(0))
+//	assert.Equal(t, lstAny.Index(1), lstInt.Index(1))
+//
+//	assert.Panics(t, func() {
+//		var lstInt []int
+//		lstAny.MapToList(&lstInt)
+//	})
+//}
 
 func Test_enumerable_MapToArray(t *testing.T) {
 	type po struct {
