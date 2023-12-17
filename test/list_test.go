@@ -11,6 +11,7 @@ import (
 
 func TestList_AsEnumerable(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3)
+	lst.ToList()
 	enumerable := lst.AsEnumerable()
 	lst.Add(4)
 

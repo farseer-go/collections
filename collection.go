@@ -30,7 +30,7 @@ func (receiver *Collection[T]) AddRange(lst Enumerable[T]) {
 	}
 }
 
-// AddRange 添加元素
+// AddList 添加元素
 func (receiver *Collection[T]) AddList(lst List[T]) {
 	if lst.Count() > 0 {
 		receiver.lock.Lock()
@@ -40,7 +40,7 @@ func (receiver *Collection[T]) AddList(lst List[T]) {
 	}
 }
 
-// AddRange 添加元素
+// AddArray 添加元素
 func (receiver *Collection[T]) AddArray(arr []T) {
 	if len(arr) > 0 {
 		receiver.lock.Lock()

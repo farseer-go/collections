@@ -33,6 +33,30 @@ func Test_collection_AddRange(t *testing.T) {
 	assert.Equal(t, 3, lst.Index(2))
 }
 
+func Test_collection_AddList(t *testing.T) {
+	lst := collections.NewList[int](1, 2, 3)
+	lst.AddList(collections.NewList[int](4, 5, 6))
+	assert.Equal(t, 6, lst.Count())
+	assert.Equal(t, 1, lst.Index(0))
+	assert.Equal(t, 2, lst.Index(1))
+	assert.Equal(t, 3, lst.Index(2))
+	assert.Equal(t, 4, lst.Index(3))
+	assert.Equal(t, 5, lst.Index(4))
+	assert.Equal(t, 6, lst.Index(5))
+}
+
+func Test_collection_AddArray(t *testing.T) {
+	lst := collections.NewList[int](1, 2, 3)
+	lst.AddArray([]int{4, 5, 6})
+	assert.Equal(t, 6, lst.Count())
+	assert.Equal(t, 1, lst.Index(0))
+	assert.Equal(t, 2, lst.Index(1))
+	assert.Equal(t, 3, lst.Index(2))
+	assert.Equal(t, 4, lst.Index(3))
+	assert.Equal(t, 5, lst.Index(4))
+	assert.Equal(t, 6, lst.Index(5))
+}
+
 func Test_collection_Clear(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3)
 	assert.Equal(t, 3, lst.Count())

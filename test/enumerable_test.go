@@ -14,6 +14,59 @@ func Test_enumerable_Any(t *testing.T) {
 	assert.False(t, lst.Any())
 	lst.Add(1)
 	assert.True(t, lst.Any())
+
+	var enumerable collections.Enumerable[int]
+	assert.Equal(t, false, enumerable.Any())
+	assert.Equal(t, 0, enumerable.First())
+	assert.Equal(t, 0, enumerable.Last())
+	assert.Equal(t, 0, enumerable.SumItem())
+	assert.Equal(t, float64(0), enumerable.Average(nil))
+	assert.Equal(t, float64(0), enumerable.AverageItem())
+	assert.Equal(t, 0, enumerable.MinItem())
+	assert.Equal(t, 0, enumerable.MaxItem())
+	assert.Equal(t, float64(1), enumerable.Min(func(item int) any {
+		return float64(1)
+	}))
+	assert.Equal(t, float64(1), enumerable.Max(func(item int) any {
+		return float64(1)
+	}))
+	assert.Equal(t, false, enumerable.Contains(0))
+	enumerable.Where(func(item int) bool {
+		return true
+	})
+
+	assert.Equal(t, false, enumerable.All(func(item int) bool { return true }))
+	enumerable.Take(0)
+	enumerable.Skip(0)
+	enumerable.Sum(func(item int) any {
+		return 1
+	})
+	enumerable.GroupBy(nil, nil)
+	enumerable.OrderBy(nil)
+	enumerable.OrderByItem()
+	enumerable.OrderByDescending(nil)
+	enumerable.OrderByDescendingItem()
+	enumerable.Select(nil, nil)
+	enumerable.SelectMany(nil, nil)
+	enumerable.SelectManyItem(nil)
+	enumerable.ToMap(nil, nil, nil)
+	enumerable.ToListAny()
+	enumerable.ToList()
+	enumerable.ToPageList(0, 0)
+	enumerable.Empty()
+	enumerable.Intersect(collections.NewList[int]())
+	enumerable.Concat(collections.NewList[int]())
+	enumerable.Union(collections.NewList[int]())
+	enumerable.Distinct()
+	enumerable.Reverse()
+	enumerable.Except(collections.NewList[int]())
+	enumerable.Range(0, 0)
+	enumerable.RangeStart(0)
+	enumerable.Rand()
+	enumerable.ToString("")
+	enumerable.For(nil)
+	enumerable.Foreach(nil)
+	enumerable.Parallel(nil)
 }
 
 func Test_enumerable_IsEmpty(t *testing.T) {

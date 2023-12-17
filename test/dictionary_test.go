@@ -17,6 +17,9 @@ func Test_dictionary_Values(t *testing.T) {
 	array := dic.Values().ToArray()
 	assert.True(t, true, array[0] == "steden" || array[0] == "18")
 	assert.True(t, true, array[1] == "steden" || array[0] == "18")
+
+	assert.Equal(t, "steden", dic.ToDictionary().GetValue("name"))
+	assert.Equal(t, "18", dic.ToDictionary().GetValue("age"))
 }
 
 func Test_dictionary_Keys(t *testing.T) {
@@ -202,4 +205,10 @@ func TestDictionaryJson(t *testing.T) {
 
 	_ = json.Unmarshal([]byte("{}"), &dic)
 	assert.False(t, dic.IsNil())
+}
+
+func TestReadonlyDictionary(t *testing.T) {
+	var dic collections.Dictionary[int, int]
+	value, _ := dic.Value()
+	assert.Equal(t, nil, value)
 }
