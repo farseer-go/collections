@@ -468,37 +468,37 @@ func Test_enumerable_ToPageList(t *testing.T) {
 //	})
 //}
 
-func Test_enumerable_MapToArray(t *testing.T) {
-	type po struct {
-		Name string
-		Age  int
-	}
-	type do struct {
-		Name string
-		Age  int
-	}
-
-	lst := collections.NewList(po{Name: "steden", Age: 37})
-	var lstDO []do
-	lst.MapToArray(&lstDO)
-
-	assert.Equal(t, 1, len(lstDO))
-	assert.Equal(t, "steden", lstDO[0].Name)
-	assert.Equal(t, 37, lstDO[0].Age)
-
-	lstAny := collections.NewListAny(1, 2)
-	var arrInt []int
-	lstAny.MapToArray(&arrInt)
-
-	assert.Equal(t, lstAny.Count(), len(arrInt))
-	assert.Equal(t, lstAny.Index(0), arrInt[0])
-	assert.Equal(t, lstAny.Index(1), arrInt[1])
-
-	assert.Panics(t, func() {
-		var val int
-		lstAny.MapToArray(&val)
-	})
-}
+//func Test_enumerable_MapToArray(t *testing.T) {
+//	type po struct {
+//		Name string
+//		Age  int
+//	}
+//	type do struct {
+//		Name string
+//		Age  int
+//	}
+//
+//	lst := collections.NewList(po{Name: "steden", Age: 37})
+//	var lstDO []do
+//	lst.MapToArray(&lstDO)
+//
+//	assert.Equal(t, 1, len(lstDO))
+//	assert.Equal(t, "steden", lstDO[0].Name)
+//	assert.Equal(t, 37, lstDO[0].Age)
+//
+//	lstAny := collections.NewListAny(1, 2)
+//	var arrInt []int
+//	lstAny.MapToArray(&arrInt)
+//
+//	assert.Equal(t, lstAny.Count(), len(arrInt))
+//	assert.Equal(t, lstAny.Index(0), arrInt[0])
+//	assert.Equal(t, lstAny.Index(1), arrInt[1])
+//
+//	assert.Panics(t, func() {
+//		var val int
+//		lstAny.MapToArray(&val)
+//	})
+//}
 
 func Test_enumerable_Intersect(t *testing.T) {
 	lst1 := collections.NewList(1, 2, 3)

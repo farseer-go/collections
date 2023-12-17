@@ -40,6 +40,9 @@ func TestReflectIsList(t *testing.T) {
 
 	_, isList = types.IsList(reflect.ValueOf(test))
 	assert.False(t, isList)
+
+	_, isList = types.IsListByType(reflect.ValueOf(test).Type())
+	assert.False(t, isList)
 }
 
 func TestReflectToArray(t *testing.T) {
