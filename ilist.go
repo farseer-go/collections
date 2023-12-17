@@ -1,6 +1,7 @@
 package collections
 
 import (
+	"fmt"
 	"github.com/farseer-go/fs/parse"
 )
 
@@ -47,7 +48,7 @@ func (receiver *IList[T]) Insert(index int, item T) {
 		panic("index值不能小于0")
 	}
 	if index > len(*receiver.source) {
-		panic("index值不能超出集合的长度")
+		panic(fmt.Sprintf("index值:%v 不能超出集合的长度:%v", index, len(*receiver.source)))
 	}
 
 	if index == 0 {
@@ -66,7 +67,7 @@ func (receiver *IList[T]) RemoveAt(index int) {
 		panic("index值不能小于0")
 	}
 	if index >= len(*receiver.source) {
-		panic("index值不能超出集合的长度")
+		panic(fmt.Sprintf("index值:%v 不能超出集合的长度:%v", index, len(*receiver.source)))
 	}
 
 	if index == 0 {
