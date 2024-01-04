@@ -96,9 +96,15 @@ func Test_enumerable_Last(t *testing.T) {
 }
 
 func Test_enumerable_Contains(t *testing.T) {
-	lst := collections.NewList[int](1, 2, 3, 4, 5)
-	assert.True(t, lst.Contains(4))
-	assert.False(t, lst.Contains(0))
+	lst := collections.NewList("www.fsgit.com", "www.yourdomain.cn")
+	assert.True(t, lst.Contains("www.fsgit.com"))
+	assert.False(t, lst.Contains("fsgit.com"))
+	assert.True(t, lst.ContainsPrefix("www."))
+	assert.False(t, lst.ContainsPrefix("bbb."))
+	assert.True(t, lst.ContainsSuffix(".com"))
+	assert.False(t, lst.ContainsSuffix("org"))
+	assert.True(t, lst.ContainsAny("fsgit"))
+	assert.False(t, lst.ContainsAny("fsgithub"))
 }
 
 func Test_enumerable_Where(t *testing.T) {
