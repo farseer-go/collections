@@ -101,6 +101,57 @@ func (receiver Enumerable[T]) Contains(item T) bool {
 	return false
 }
 
+// ContainsPrefix 元素中是否包含前缀
+func (receiver Enumerable[T]) ContainsPrefix(item T) bool {
+	if receiver.lock == nil {
+		return false
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	for _, t := range *receiver.source {
+		if strings.HasPrefix(parse.ToString(t), parse.ToString(item)) {
+			return true
+		}
+	}
+	return false
+}
+
+// ContainsSuffix 元素中是否包含后缀
+func (receiver Enumerable[T]) ContainsSuffix(item T) bool {
+	if receiver.lock == nil {
+		return false
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	for _, t := range *receiver.source {
+		if strings.HasSuffix(parse.ToString(t), parse.ToString(item)) {
+			return true
+		}
+	}
+	return false
+}
+
+// ContainsAny 元素中是否包含item（strings.Contains）
+func (receiver Enumerable[T]) ContainsAny(item T) bool {
+	if receiver.lock == nil {
+		return false
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	for _, t := range *receiver.source {
+		if strings.Contains(parse.ToString(t), parse.ToString(item)) {
+			return true
+		}
+	}
+	return false
+}
+
 // Where 对数据进行筛选
 func (receiver Enumerable[T]) Where(fn func(item T) bool) Enumerable[T] {
 	if receiver.lock == nil {
