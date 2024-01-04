@@ -29,6 +29,16 @@ func NewList[T any](source ...T) List[T] {
 	return lst
 }
 
+// NewList 创建集合，将chan中的数据填充到集合
+func NewListFromChan[T any](c chan T) List[T] {
+	var lst = List[T]{}
+	lst.New()
+	for len(c) > 0 {
+		lst.Add(<-c)
+	}
+	return lst
+}
+
 // AsEnumerable 返回enumerable类型
 func (receiver *List[T]) AsEnumerable() Enumerable[T] {
 	receiver.lock.RLock()
