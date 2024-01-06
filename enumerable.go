@@ -3,6 +3,7 @@ package collections
 import (
 	"github.com/farseer-go/fs/parse"
 	"github.com/farseer-go/fs/types"
+	"github.com/timandy/routine"
 	"math/rand"
 	"reflect"
 	"strings"
@@ -1103,10 +1104,10 @@ func (receiver Enumerable[T]) Parallel(itemFn func(item *T)) {
 	wg.Add(len(*receiver.source))
 	for i := 0; i < len(*receiver.source); i++ {
 		item := &(*receiver.source)[i]
-		go func() {
+		routine.Go(func() {
 			defer wg.Done()
 			itemFn(item)
-		}()
+		})
 	}
 	wg.Wait()
 }
