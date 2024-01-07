@@ -35,6 +35,9 @@ func NewReadonlyDictionaryFromMap[TKey comparable, TValue any](source map[TKey]T
 
 // Values 获取字典的value
 func (receiver ReadonlyDictionary[TKey, TValue]) Values() List[TValue] {
+	if receiver.lock==nil{
+		return NewList[TValue]()
+	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -47,6 +50,9 @@ func (receiver ReadonlyDictionary[TKey, TValue]) Values() List[TValue] {
 
 // Keys 获取字典的Keys
 func (receiver ReadonlyDictionary[TKey, TValue]) Keys() List[TKey] {
+	if receiver.lock==nil{
+		return NewList[TKey]()
+	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -71,6 +77,9 @@ func (receiver ReadonlyDictionary[TKey, TValue]) Count() int {
 
 // ContainsKey 是否存在KEY
 func (receiver ReadonlyDictionary[TKey, TValue]) ContainsKey(key TKey) bool {
+	if receiver.lock==nil{
+		return false
+	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -80,6 +89,9 @@ func (receiver ReadonlyDictionary[TKey, TValue]) ContainsKey(key TKey) bool {
 
 // ContainsValue 是否存在指定的Value
 func (receiver ReadonlyDictionary[TKey, TValue]) ContainsValue(value TValue) bool {
+	if receiver.lock==nil{
+		return false
+	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -93,6 +105,10 @@ func (receiver ReadonlyDictionary[TKey, TValue]) ContainsValue(value TValue) boo
 
 // GetValue 获取指定KEY的Value
 func (receiver ReadonlyDictionary[TKey, TValue]) GetValue(key TKey) TValue {
+	if receiver.lock==nil{
+		var val TValue
+		return val
+	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -101,6 +117,9 @@ func (receiver ReadonlyDictionary[TKey, TValue]) GetValue(key TKey) TValue {
 
 // ToMap 转成map对象
 func (receiver ReadonlyDictionary[TKey, TValue]) ToMap() map[TKey]TValue {
+	if receiver.lock==nil{
+		return make(map[TKey]TValue)
+	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
