@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/farseer-go/fs v0.12.0
 	github.com/stretchr/testify v1.8.4
-	github.com/timandy/routine v1.1.2
+	github.com/timandy/routine v1.1.3
 )
 
 require (
