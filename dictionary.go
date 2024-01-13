@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sync"
 )
 
 // Dictionary 字典
@@ -93,4 +94,13 @@ func (receiver *Dictionary[TKey, TValue]) ToReadonlyDictionary() ReadonlyDiction
 	defer receiver.lock.RUnlock()
 
 	return receiver.ReadonlyDictionary
+}
+
+// New 初始化（用于反映时使用）
+func (receiver *Dictionary[TKey, TValue]) New() {
+	if receiver.source == nil {
+		var lock sync.RWMutex
+		receiver.source = make(map[TKey]TValue)
+		receiver.lock = &lock
+	}
 }
