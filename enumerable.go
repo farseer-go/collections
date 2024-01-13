@@ -440,7 +440,7 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 		// List集合
 		if mapValueIsListType {
 			if findMapValue.Kind() != reflect.Pointer {
-				arrValues := types.ListToArray(findMapValue)
+				arrValues := types.GetListToArray(findMapValue)
 				findMapValue = types.ListNew(mapValueItemType)
 				for _, value := range arrValues {
 					types.ListAdd(findMapValue, value)

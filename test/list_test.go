@@ -49,7 +49,7 @@ func TestReflectIsList(t *testing.T) {
 func TestReflectToArray(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3)
 	lstValue := reflect.ValueOf(lst)
-	arr := types.ListToArray(lstValue)
+	arr := types.GetListToArray(lstValue)
 	assert.Equal(t, 3, len(arr))
 	assert.Equal(t, 1, arr[0])
 	assert.Equal(t, 2, arr[1])
