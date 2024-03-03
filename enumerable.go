@@ -56,6 +56,21 @@ func (receiver Enumerable[T]) First() T {
 	return t
 }
 
+// First 查找符合条件的第一个指针元素
+func (receiver Enumerable[T]) FirstAddr() *T {
+	if receiver.lock == nil {
+		return nil
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	if len(*receiver.source) > 0 {
+		return &(*receiver.source)[0]
+	}
+	return nil
+}
+
 // Last 集合最后一个元素
 func (receiver Enumerable[T]) Last() T {
 	if receiver.lock == nil {
