@@ -119,6 +119,9 @@ func Test_enumerable_Contains(t *testing.T) {
 	assert.False(t, lst.ContainsSuffix("org"))
 	assert.True(t, lst.ContainsAny("fsgit"))
 	assert.False(t, lst.ContainsAny("fsgithub"))
+
+	lst = collections.NewList("com", "cn", "org", "net", "com")
+	assert.Equal(t, 2, lst.ContainsCount("com"))
 }
 
 func Test_enumerable_Where(t *testing.T) {

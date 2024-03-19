@@ -117,6 +117,24 @@ func (receiver Enumerable[T]) Contains(item T) bool {
 	return false
 }
 
+// ContainsCount 获取包含几个元素
+func (receiver Enumerable[T]) ContainsCount(item T) int {
+	if receiver.lock == nil {
+		return 0
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	count := 0
+	for _, t := range *receiver.source {
+		if parse.IsEqual(t, item) {
+			count++
+		}
+	}
+	return count
+}
+
 // ContainsPrefix 元素中是否包含前缀
 func (receiver Enumerable[T]) ContainsPrefix(item T) bool {
 	if receiver.lock == nil {
