@@ -938,10 +938,14 @@ func (receiver Enumerable[T]) Distinct() Enumerable[T] {
 	defer receiver.lock.RUnlock()
 
 	lst := NewList[T]()
+
 	for _, item := range *receiver.source {
-		if !lst.Contains(item) {
+		if !lst.Where(func(t T) bool { return reflect.DeepEqual(item, t) }).Any() {
 			lst.Add(item)
 		}
+		//if !lst.Contains(item) {
+		//	lst.Add(item)
+		//}
 	}
 	return lst.Enumerable
 }
