@@ -56,7 +56,7 @@ func (receiver Enumerable[T]) First() T {
 	return t
 }
 
-// First 查找符合条件的第一个指针元素
+// FirstAddr 查找符合条件的第一个指针元素
 func (receiver Enumerable[T]) FirstAddr() *T {
 	if receiver.lock == nil {
 		return nil
@@ -497,7 +497,8 @@ func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	lst := *receiver.source
+	var lst []T
+	lst = append(lst, *receiver.source...)
 
 	// 首先拿数组第0个出来做为左边值
 	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
@@ -532,7 +533,8 @@ func (receiver Enumerable[T]) OrderByItem() Enumerable[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	lst := *receiver.source
+	var lst []T
+	lst = append(lst, *receiver.source...)
 
 	// 首先拿数组第0个出来做为左边值
 	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
@@ -565,7 +567,8 @@ func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[
 		return receiver
 	}
 
-	lst := *receiver.source
+	var lst []T
+	lst = append(lst, *receiver.source...)
 
 	// 首先拿数组第0个出来做为左边值
 	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
@@ -600,7 +603,8 @@ func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	lst := *receiver.source
+	var lst []T
+	lst = append(lst, *receiver.source...)
 
 	// 首先拿数组第0个出来做为左边值
 	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
