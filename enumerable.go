@@ -796,8 +796,6 @@ func (receiver Enumerable[T]) ToList() List[T] {
 	if receiver.lock == nil {
 		return NewList[T]()
 	}
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
 
 	return NewList(*receiver.source...)
 }
@@ -866,8 +864,6 @@ func (receiver Enumerable[T]) ToListAny() ListAny {
 	if receiver.lock == nil {
 		return lst
 	}
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
 
 	array := receiver.ToArray()
 	for _, item := range array {
