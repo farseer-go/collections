@@ -127,7 +127,7 @@ func (receiver *List[T]) GormDataType() string {
 }
 
 // Copy 克隆出新的集合
-func (receiver *List[T]) Copy() List[T] {
+func (receiver List[T]) Copy() List[T] {
 	arr := *receiver.source
 	return NewList(arr...)
 }
