@@ -125,3 +125,9 @@ func (receiver *List[T]) UnmarshalJSON(b []byte) error {
 func (receiver *List[T]) GormDataType() string {
 	return "json"
 }
+
+// Copy 克隆出新的集合
+func (receiver *List[T]) Copy() List[T] {
+	arr := *receiver.source
+	return NewList(arr...)
+}
