@@ -472,14 +472,13 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 		}
 		// List集合
 		if mapValueIsListType {
+			// 在原来的List集合，做Add操作，必须保住该集合是指针类型
 			if findMapValue.Kind() != reflect.Pointer {
-				arrValues := types.GetListToArray(findMapValue)
+				arrValues := types.GetListToArrayValue(findMapValue)
 				findMapValue = types.ListNew(mapValueItemType)
-				for _, value := range arrValues {
-					types.ListAdd(findMapValue, value)
-				}
+				types.ListAddValue(findMapValue, arrValues)
 			}
-			types.ListAdd(findMapValue, item)
+			types.ListAddValue(findMapValue, reflect.ValueOf(item))
 			mapSliceVal.SetMapIndex(key, findMapValue.Elem())
 		} else {
 			mapValue := reflect.Append(findMapValue, reflect.ValueOf(item))
