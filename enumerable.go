@@ -56,21 +56,6 @@ func (receiver Enumerable[T]) First() T {
 	return t
 }
 
-// FirstAddr 查找符合条件的第一个指针元素
-func (receiver Enumerable[T]) FirstAddr() *T {
-	if receiver.lock == nil {
-		return nil
-	}
-
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
-
-	if len(*receiver.source) > 0 {
-		return &(*receiver.source)[0]
-	}
-	return nil
-}
-
 // Last 集合最后一个元素
 func (receiver Enumerable[T]) Last() T {
 	if receiver.lock == nil {
@@ -1126,6 +1111,20 @@ func (receiver Enumerable[T]) Foreach(itemFn func(item *T)) {
 		item := &(*receiver.source)[i]
 		itemFn(item)
 	}
+}
+
+// Find 查找指定条件的元素，返回批一个指针元素
+func (receiver Enumerable[T]) Find(itemFn func(item *T) bool) *T {
+	if receiver.lock == nil {
+		return nil
+	}
+	for i := 0; i < len(*receiver.source); i++ {
+		item := &(*receiver.source)[i]
+		if itemFn(item) {
+			return item
+		}
+	}
+	return nil
 }
 
 // Parallel for range 并行操作
