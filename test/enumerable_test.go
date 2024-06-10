@@ -101,6 +101,18 @@ func Test_enumerable_Find(t *testing.T) {
 	assert.Equal(t, 99, lst.First().Age)
 }
 
+func Test_enumerable_FirstAddr(t *testing.T) {
+	type Name struct {
+		Age int
+	}
+	lst := collections.NewList[Name](Name{Age: 8})
+	assert.Equal(t, 8, lst.First().Age)
+
+	lst.FirstAddr().Age = 99
+
+	assert.Equal(t, 99, lst.First().Age)
+}
+
 func Test_enumerable_Last(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3, 4, 5, 6)
 	assert.Equal(t, lst.Last(), 6)
