@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Enumerable[T any] struct {
@@ -1001,20 +1002,19 @@ func (receiver Enumerable[T]) RangeStart(startIndex int) Enumerable[T] {
 }
 
 // Rand 返回随机元素
-func (receiver Enumerable[T]) Rand() T {
+func (receiver Enumerable[T]) Rand() *T {
 	if receiver.lock == nil {
-		var t T
-		return t
+		return nil
 	}
 
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
 	if receiver.Count() < 2 {
-		return receiver.First()
+		return &(*receiver.source)[0]
 	}
-	random := rand.Intn(receiver.Count())
-	return (*receiver.source)[random]
+	random := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(receiver.Count())
+	return &(*receiver.source)[random]
 }
 
 // ToString 将集合转成字符串，并用split分隔
