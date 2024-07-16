@@ -29,7 +29,7 @@ func NewList[T any](source ...T) List[T] {
 	return lst
 }
 
-// NewList 创建集合，将chan中的数据填充到集合
+// NewListFromChan 创建集合，将chan中的数据填充到集合
 func NewListFromChan[T any](c chan T) List[T] {
 	var lst = List[T]{}
 	lst.New()
