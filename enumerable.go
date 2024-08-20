@@ -806,6 +806,23 @@ func (receiver Enumerable[T]) ToArray() []T {
 	return *receiver.source
 }
 
+// ToArrayAny 转成数组
+func (receiver Enumerable[T]) ToArrayAny() []any {
+	if receiver.lock == nil {
+		return []any{}
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	var items []any
+	for _, item := range *receiver.source {
+		var itemAny any = item
+		items = append(items, itemAny)
+	}
+	return items
+}
+
 // ToPageList 数组分页
 func (receiver Enumerable[T]) ToPageList(pageSize int, pageIndex int) PageList[T] {
 	if receiver.lock == nil {
