@@ -296,8 +296,11 @@ func (receiver Enumerable[T]) Average(fn func(item T) any) float64 {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	sum := receiver.Sum(fn)
 	count := len(*receiver.source)
+	if count ==0 {
+		return 0
+	}
+	sum := receiver.Sum(fn)
 	return parse.Convert(sum, float64(0)) / parse.Convert(count, float64(0))
 }
 
