@@ -2,13 +2,17 @@ package collections
 
 import (
 	"fmt"
+	"github.com/farseer-go/fs/dateTime"
+	"github.com/farseer-go/fs/fastReflect"
+	"github.com/farseer-go/fs/parse"
 	"reflect"
+	"time"
 )
 
 // CompareLeftGreaterThanRight 比较两个值，左值是否大于右值
 func CompareLeftGreaterThanRight(leftValue any, rightValue any) bool {
-	kind := reflect.TypeOf(rightValue).Kind()
-	switch kind {
+	pointerMeta := fastReflect.PointerOf(leftValue)
+	switch pointerMeta.Kind {
 	case reflect.Int8:
 		return rightValue.(int8) <= leftValue.(int8)
 	case reflect.Int16:
@@ -33,6 +37,8 @@ func CompareLeftGreaterThanRight(leftValue any, rightValue any) bool {
 		return rightValue.(float32) <= leftValue.(float32)
 	case reflect.Float64:
 		return rightValue.(float64) <= leftValue.(float64)
+	case reflect.Bool:
+		return parse.ToInt(rightValue.(bool)) <= parse.ToInt(leftValue.(bool))
 	case reflect.String:
 		strRight := rightValue.(string)
 		strLeft := leftValue.(string)
@@ -54,6 +60,13 @@ func CompareLeftGreaterThanRight(leftValue any, rightValue any) bool {
 		}
 		// 说明left长度比right短。则短的排前面
 		return false
+	default:
+		if pointerMeta.IsTime {
+			return (rightValue.(time.Time)).UnixMilli() <= (leftValue.(time.Time)).UnixMilli()
+		}
+		if pointerMeta.IsDateTime {
+			return (rightValue.(dateTime.DateTime)).UnixMilli() <= (leftValue.(dateTime.DateTime)).UnixMilli()
+		}
 	}
-	panic(fmt.Errorf("该类型无法比较：%s", kind))
+	panic(fmt.Errorf("该类型无法比较：%s", pointerMeta.Kind))
 }
