@@ -12,6 +12,11 @@ import (
 // CompareLeftGreaterThanRight 比较两个值，左值是否大于右值
 func CompareLeftGreaterThanRight(leftValue any, rightValue any) bool {
 	pointerMeta := fastReflect.PointerOf(leftValue)
+	if pointerMeta.IsEmum {
+		leftValue = parse.ToInt(leftValue)
+		rightValue = parse.ToInt(rightValue)
+		pointerMeta.Kind = reflect.Int
+	}
 	switch pointerMeta.Kind {
 	case reflect.Int8:
 		return rightValue.(int8) <= leftValue.(int8)
