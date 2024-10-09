@@ -62,6 +62,10 @@ func (receiver Enumerable[T]) FirstAddr() *T {
 	if receiver.lock == nil {
 		return nil
 	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	item := &(*receiver.source)[0]
 	return item
 }
@@ -297,7 +301,7 @@ func (receiver Enumerable[T]) Average(fn func(item T) any) float64 {
 	defer receiver.lock.RUnlock()
 
 	count := len(*receiver.source)
-	if count ==0 {
+	if count == 0 {
 		return 0
 	}
 	sum := receiver.Sum(fn)
@@ -564,6 +568,9 @@ func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[
 		return receiver
 	}
 
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	var lst []T
 	lst = append(lst, *receiver.source...)
 
@@ -597,6 +604,7 @@ func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 	if receiver.lock == nil {
 		return receiver
 	}
+
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
@@ -793,6 +801,9 @@ func (receiver Enumerable[T]) ToList() List[T] {
 	if receiver.lock == nil {
 		return NewList[T]()
 	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
 
 	return NewList(*receiver.source...)
 }
@@ -1057,6 +1068,10 @@ func (receiver Enumerable[T]) For(itemFn func(index int, item *T)) {
 	if receiver.lock == nil {
 		return
 	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	for i := 0; i < len(*receiver.source); i++ {
 		item := &(*receiver.source)[i]
 		itemFn(i, item)
@@ -1068,24 +1083,14 @@ func (receiver Enumerable[T]) Foreach(itemFn func(item *T)) {
 	if receiver.lock == nil {
 		return
 	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	for i := 0; i < len(*receiver.source); i++ {
 		item := &(*receiver.source)[i]
 		itemFn(item)
 	}
-}
-
-// Find 查找指定条件的元素，返回批一个指针元素
-func (receiver Enumerable[T]) Find(itemFn func(item *T) bool) *T {
-	if receiver.lock == nil {
-		return nil
-	}
-	for i := 0; i < len(*receiver.source); i++ {
-		item := &(*receiver.source)[i]
-		if itemFn(item) {
-			return item
-		}
-	}
-	return nil
 }
 
 // Parallel for range 并行操作
@@ -1093,6 +1098,10 @@ func (receiver Enumerable[T]) Parallel(itemFn func(item *T)) {
 	if receiver.lock == nil {
 		return
 	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
 	var wg sync.WaitGroup
 	wg.Add(len(*receiver.source))
 	for i := 0; i < len(*receiver.source); i++ {
@@ -1103,4 +1112,22 @@ func (receiver Enumerable[T]) Parallel(itemFn func(item *T)) {
 		})
 	}
 	wg.Wait()
+}
+
+// Find 查找指定条件的元素，返回批一个指针元素
+func (receiver Enumerable[T]) Find(itemFn func(item *T) bool) *T {
+	if receiver.lock == nil {
+		return nil
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	for i := 0; i < len(*receiver.source); i++ {
+		item := &(*receiver.source)[i]
+		if itemFn(item) {
+			return item
+		}
+	}
+	return nil
 }

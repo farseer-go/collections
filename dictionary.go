@@ -59,12 +59,11 @@ func (receiver *Dictionary[TKey, TValue]) Remove(key TKey) {
 
 // Scan scan value into Jsonb, implements sql.Scanner interface
 func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
-	if receiver.lock != nil {
-		receiver.lock.Lock()
-		defer receiver.lock.Unlock()
-	}
-
 	if val == nil {
+		if receiver.lock != nil {
+			receiver.lock.Lock()
+			defer receiver.lock.Unlock()
+		}
 		*receiver = NewDictionary[TKey, TValue]()
 		return nil
 	}
@@ -84,6 +83,12 @@ func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
 func (receiver *Dictionary[TKey, TValue]) UnmarshalJSON(ba []byte) error {
 	t := map[TKey]TValue{}
 	err := json.Unmarshal(ba, &t)
+
+	if receiver.lock != nil {
+		receiver.lock.Lock()
+		defer receiver.lock.Unlock()
+	}
+
 	*receiver = NewDictionaryFromMap(t)
 	return err
 }
@@ -102,5 +107,19 @@ func (receiver *Dictionary[TKey, TValue]) New() {
 		var lock sync.RWMutex
 		receiver.source = make(map[TKey]TValue)
 		receiver.lock = &lock
+	}
+}
+
+// Foreach for range操作
+func (receiver *Dictionary[TKey, TValue]) Foreach(itemFn func(TKey, TValue)) {
+	if receiver.lock == nil {
+		return
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	for k, v := range receiver.source {
+		itemFn(k, v)
 	}
 }

@@ -700,13 +700,13 @@ func TestEnumerable_Rand(t *testing.T) {
 	rand.Seed(int64(time.Now().Nanosecond()))
 	for i := 0; i < 100; i++ {
 		val := collections.NewList(1, 2, 3).Rand()
-		if val != 1 && val != 2 && val != 3 {
+		if *val != 1 && *val != 2 && *val != 3 {
 			t.Error()
 		}
 	}
 
 	val := collections.NewList(1).Rand()
-	assert.Equal(t, 1, val)
+	assert.Equal(t, 1, *val)
 }
 
 func TestEnumerable_ToString(t *testing.T) {
