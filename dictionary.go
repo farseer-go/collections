@@ -35,45 +35,30 @@ func (receiver *Dictionary[TKey, TValue]) AddMap(source map[TKey]TValue) {
 
 // Add 添加元素
 func (receiver *Dictionary[TKey, TValue]) Add(key TKey, value TValue) {
-	receiver.lock.Lock()
-	defer receiver.lock.Unlock()
-
-	receiver.source[key] = value
+	receiver.source.Store(key, value)
 }
 
 // Update 更新元素
 func (receiver *Dictionary[TKey, TValue]) Update(key TKey, f func(value *TValue)) {
-	receiver.lock.Lock()
-	defer receiver.lock.Unlock()
-
-	v := receiver.source[key]
-	f(&v)
-	receiver.source[key] = v
+	v, _ := receiver.source.Load(key)
+	v2 := v.(TValue)
+	f(&v2)
+	receiver.source.Store(key, v2)
 }
 
 // Clear 清除元素
 func (receiver *Dictionary[TKey, TValue]) Clear() {
-	receiver.lock.Lock()
-	defer receiver.lock.Unlock()
-
-	receiver.source = make(map[TKey]TValue)
+	receiver.source = &sync.Map{}
 }
 
 // Remove 移除元素
 func (receiver *Dictionary[TKey, TValue]) Remove(key TKey) {
-	receiver.lock.Lock()
-	defer receiver.lock.Unlock()
-
-	delete(receiver.source, key)
+	receiver.source.Delete(key)
 }
 
 // Scan scan value into Jsonb, implements sql.Scanner interface
 func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
 	if val == nil {
-		if receiver.lock != nil {
-			receiver.lock.Lock()
-			defer receiver.lock.Unlock()
-		}
 		*receiver = NewDictionary[TKey, TValue]()
 		return nil
 	}
@@ -93,43 +78,29 @@ func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
 func (receiver *Dictionary[TKey, TValue]) UnmarshalJSON(ba []byte) error {
 	t := map[TKey]TValue{}
 	err := json.Unmarshal(ba, &t)
-
-	if receiver.lock != nil {
-		receiver.lock.Lock()
-		defer receiver.lock.Unlock()
-	}
-
 	*receiver = NewDictionaryFromMap(t)
 	return err
 }
 
 // ToReadonlyDictionary 转成ReadonlyDictionary对象
 func (receiver *Dictionary[TKey, TValue]) ToReadonlyDictionary() ReadonlyDictionary[TKey, TValue] {
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
-
 	return receiver.ReadonlyDictionary
 }
 
 // New 初始化（用于反映时使用）
 func (receiver *Dictionary[TKey, TValue]) New() {
 	if receiver.source == nil {
-		var lock sync.RWMutex
-		receiver.source = make(map[TKey]TValue)
-		receiver.lock = &lock
+		receiver.source = &sync.Map{}
 	}
 }
 
 // Foreach for range操作
 func (receiver *Dictionary[TKey, TValue]) Foreach(itemFn func(TKey, TValue)) {
-	if receiver.lock == nil {
+	if receiver.source == nil {
 		return
 	}
-
-	receiver.lock.RLock()
-	defer receiver.lock.RUnlock()
-
-	for k, v := range receiver.source {
-		itemFn(k, v)
-	}
+	receiver.source.Range(func(key, value any) bool {
+		itemFn(key.(TKey), value.(TValue))
+		return true
+	})
 }
