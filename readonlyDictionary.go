@@ -10,7 +10,8 @@ import (
 // ReadonlyDictionary 只读字典
 type ReadonlyDictionary[TKey comparable, TValue any] struct {
 	// source array
-	source *sync.Map
+	source  *sync.Map
+	source2 map[TKey]TValue // 仅用于mapper组件：获取kv类型
 }
 
 // NewReadonlyDictionary 创建一个字典
@@ -106,7 +107,7 @@ func (receiver ReadonlyDictionary[TKey, TValue]) GetValue(key TKey) TValue {
 	if v, exists := receiver.source.Load(key); exists {
 		return v.(TValue)
 	}
-	
+
 	var val TValue
 	return val
 }
