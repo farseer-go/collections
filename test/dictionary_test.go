@@ -56,6 +56,17 @@ func Test_dictionary_Add(t *testing.T) {
 	assert.Equal(t, "boy", dic.GetValue("sex"))
 }
 
+func Test_dictionary_Update(t *testing.T) {
+	maps := make(map[string]string)
+	maps["name"] = "steden"
+	maps["age"] = "18"
+	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic.Update("name", func(value *string) {
+		*value = "tao"
+	})
+	assert.Equal(t, "tao", dic.GetValue("name"))
+}
+
 func TestDictionary_AddMap(t *testing.T) {
 	dic := collections.NewDictionary[string, int]()
 	maps := map[string]int{"age": 18}

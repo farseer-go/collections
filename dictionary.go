@@ -41,6 +41,16 @@ func (receiver *Dictionary[TKey, TValue]) Add(key TKey, value TValue) {
 	receiver.source[key] = value
 }
 
+// Update 更新元素
+func (receiver *Dictionary[TKey, TValue]) Update(key TKey, f func(value *TValue)) {
+	receiver.lock.Lock()
+	defer receiver.lock.Unlock()
+
+	v := receiver.source[key]
+	f(&v)
+	receiver.source[key] = v
+}
+
 // Clear 清除元素
 func (receiver *Dictionary[TKey, TValue]) Clear() {
 	receiver.lock.Lock()
