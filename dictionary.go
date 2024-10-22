@@ -40,10 +40,11 @@ func (receiver *Dictionary[TKey, TValue]) Add(key TKey, value TValue) {
 
 // Update 更新元素
 func (receiver *Dictionary[TKey, TValue]) Update(key TKey, f func(value *TValue)) {
-	v, _ := receiver.source.Load(key)
-	v2 := v.(TValue)
-	f(&v2)
-	receiver.source.Store(key, v2)
+	if v, exists := receiver.source.Load(key); exists {
+		v2 := v.(TValue)
+		f(&v2)
+		receiver.source.Store(key, v2)
+	}
 }
 
 // Clear 清除元素
