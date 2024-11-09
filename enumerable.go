@@ -1,14 +1,15 @@
 package collections
 
 import (
-	"github.com/farseer-go/fs/parse"
-	"github.com/farseer-go/fs/types"
-	"github.com/timandy/routine"
 	"math/rand"
 	"reflect"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/farseer-go/fs/parse"
+	"github.com/farseer-go/fs/types"
+	"github.com/timandy/routine"
 )
 
 type Enumerable[T any] struct {
@@ -519,6 +520,38 @@ func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
 				}
 				lst[leftIndex] = rightItem
 				leftValue = fn(lst[leftIndex])
+			}
+		}
+	}
+
+	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
+}
+
+// OrderByThen 自定义多条件，返回true时，排在前面
+func (receiver Enumerable[T]) OrderByThen(fn func(leftItem, rightItem T) bool) Enumerable[T] {
+	if receiver.lock == nil {
+		return receiver
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	var lst []T
+	lst = append(lst, *receiver.source...)
+
+	// 首先拿数组第0个出来做为左边值
+	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
+		// 再拿出左边值索引后面的值一一对比
+		for rightIndex := leftIndex + 1; rightIndex < len(lst); rightIndex++ {
+			rightItem := lst[rightIndex]
+
+			// 后面的值比前面的值小，说明要交换数据
+			if fn(lst[leftIndex], rightItem) {
+				// 开始交换数据，先从后面交换到前面
+				for swapIndex := rightIndex; swapIndex > leftIndex; swapIndex-- {
+					lst[swapIndex] = lst[swapIndex-1]
+				}
+				lst[leftIndex] = rightItem
 			}
 		}
 	}
