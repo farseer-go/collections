@@ -1,8 +1,8 @@
 module github.com/farseer-go/collections
 
-go 1.19
+go 1.21
 
-toolchain go1.19
+toolchain go1.23.3
 
 require (
 	github.com/farseer-go/fs v0.15.0
