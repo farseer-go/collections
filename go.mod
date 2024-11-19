@@ -2,15 +2,13 @@ module github.com/farseer-go/collections
 
 go 1.19
 
-toolchain go1.22.0
+toolchain go1.19
 
 require (
-	github.com/farseer-go/fs v0.14.0
-	github.com/stretchr/testify v1.8.4
-	github.com/timandy/routine v1.1.2
+	github.com/farseer-go/fs v0.15.0
+	github.com/stretchr/testify v1.9.0
+	github.com/timandy/routine v1.1.4
 )
-
-exclude github.com/timandy/routine v1.1.3
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
