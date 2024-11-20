@@ -1,10 +1,11 @@
 package collections
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
+
+	"github.com/bytedance/sonic"
 )
 
 // Dictionary 字典
@@ -78,7 +79,7 @@ func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
 // UnmarshalJSON to deserialize []byte
 func (receiver *Dictionary[TKey, TValue]) UnmarshalJSON(ba []byte) error {
 	t := map[TKey]TValue{}
-	err := json.Unmarshal(ba, &t)
+	err := sonic.Unmarshal(ba, &t)
 	*receiver = NewDictionaryFromMap(t)
 	return err
 }

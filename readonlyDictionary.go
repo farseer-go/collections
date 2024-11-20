@@ -2,9 +2,10 @@ package collections
 
 import (
 	"database/sql/driver"
-	"encoding/json"
-	"github.com/farseer-go/fs/parse"
 	"sync"
+
+	"github.com/bytedance/sonic"
+	"github.com/farseer-go/fs/parse"
 )
 
 // ReadonlyDictionary 只读字典
@@ -142,7 +143,7 @@ func (receiver ReadonlyDictionary[TKey, TValue]) MarshalJSON() ([]byte, error) {
 		return []byte("{}"), nil
 	}
 
-	return json.Marshal(receiver.ToMap())
+	return sonic.Marshal(receiver.ToMap())
 }
 
 // GormDataType gorm common data type

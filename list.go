@@ -2,11 +2,12 @@ package collections
 
 import (
 	"database/sql/driver"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/farseer-go/fs/parse"
 	"sync"
+
+	"github.com/bytedance/sonic"
+	"github.com/farseer-go/fs/parse"
 )
 
 // List 集合
@@ -108,7 +109,7 @@ func (receiver List[T]) MarshalJSON() ([]byte, error) {
 	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
-	return json.Marshal(receiver.source)
+	return sonic.Marshal(receiver.source)
 }
 
 // UnmarshalJSON to deserialize []byte
@@ -118,7 +119,7 @@ func (receiver *List[T]) UnmarshalJSON(b []byte) error {
 	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
-	return json.Unmarshal(b, receiver.source)
+	return sonic.Unmarshal(b, receiver.source)
 }
 
 // GormDataType gorm common data type

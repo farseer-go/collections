@@ -2,9 +2,10 @@ package test
 
 import (
 	"encoding/json"
+	"testing"
+
 	"github.com/farseer-go/collections"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_collection_Count(t *testing.T) {
