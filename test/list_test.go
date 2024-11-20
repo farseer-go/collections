@@ -1,12 +1,13 @@
 package test
 
 import (
-	"encoding/json"
+	"reflect"
+	"testing"
+
+	"github.com/bytedance/sonic"
 	"github.com/farseer-go/collections"
 	"github.com/farseer-go/fs/types"
 	"github.com/stretchr/testify/assert"
-	"reflect"
-	"testing"
 )
 
 func TestList_AsEnumerable(t *testing.T) {
@@ -100,10 +101,10 @@ func TestNil(t *testing.T) {
 
 func TestListJson(t *testing.T) {
 	var lst collections.List[int]
-	marshal, _ := json.Marshal(lst)
+	marshal, _ := sonic.Marshal(lst)
 	assert.Equal(t, "[]", string(marshal))
 
-	_ = json.Unmarshal([]byte("[]"), &lst)
+	_ = sonic.Unmarshal([]byte("[]"), &lst)
 	assert.False(t, lst.IsNil())
 }
 

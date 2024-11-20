@@ -1,12 +1,13 @@
 package test
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
+	"testing"
+
+	"github.com/bytedance/sonic"
 	"github.com/farseer-go/collections"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_dictionary_Values(t *testing.T) {
@@ -211,10 +212,10 @@ func TestDictionary_IsNil(t *testing.T) {
 func TestDictionaryJson(t *testing.T) {
 	var dic collections.Dictionary[int, int]
 	assert.True(t, dic.IsNil())
-	marshal, _ := json.Marshal(dic)
+	marshal, _ := sonic.Marshal(dic)
 	assert.Equal(t, "{}", string(marshal))
 
-	_ = json.Unmarshal([]byte("{}"), &dic)
+	_ = sonic.Unmarshal([]byte("{}"), &dic)
 	assert.False(t, dic.IsNil())
 }
 

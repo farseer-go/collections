@@ -1,9 +1,9 @@
 package test
 
 import (
-	"encoding/json"
 	"testing"
 
+	"github.com/bytedance/sonic"
 	"github.com/farseer-go/collections"
 	"github.com/stretchr/testify/assert"
 )
@@ -78,7 +78,7 @@ func Test_collection_RemoveAll(t *testing.T) {
 func TestCollection_MarshalJSON(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3, 6)
 	strjson, _ := lst.MarshalJSON()
-	retjson, _ := json.Marshal(lst)
+	retjson, _ := sonic.Marshal(lst)
 	assert.Equal(t, retjson, strjson)
 }
 
