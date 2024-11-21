@@ -2,16 +2,17 @@ package collections
 
 import (
 	"fmt"
+	"reflect"
+	"time"
+
 	"github.com/farseer-go/fs/dateTime"
 	"github.com/farseer-go/fs/fastReflect"
 	"github.com/farseer-go/fs/parse"
-	"reflect"
-	"time"
 )
 
 // CompareLeftGreaterThanRight 比较两个值，左值是否大于右值
-func CompareLeftGreaterThanRight(leftValue any, rightValue any) bool {
-	pointerMeta := fastReflect.PointerOf(leftValue)
+func CompareLeftGreaterThanRight(pointerMeta fastReflect.PointerMeta, leftValue any, rightValue any) bool {
+	//pointerMeta := fastReflect.PointerOf(leftValue)
 	if pointerMeta.IsEmum {
 		leftValue = parse.ToInt(leftValue)
 		rightValue = parse.ToInt(rightValue)

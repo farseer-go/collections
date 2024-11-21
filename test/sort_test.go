@@ -90,7 +90,7 @@ type family struct {
 }
 
 // BenchmarkOrderBy-10            2         659323792 ns/op          245808 B/op          3 allocs/op
-// BenchmarkOrderBy-10          248           4913683 ns/op          245947 B/op          6 allocs/op
+// BenchmarkOrderBy-10          334           3615433 ns/op          245905 B/op          6 allocs/op
 func BenchmarkOrderBy(b *testing.B) {
 	lst := collections.NewList[family]()
 	for i := 0; i < 10000; i++ {

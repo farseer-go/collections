@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/farseer-go/fs/fastReflect"
 	"github.com/farseer-go/fs/parse"
 	"github.com/farseer-go/fs/types"
 	"github.com/timandy/routine"
@@ -341,9 +342,10 @@ func (receiver Enumerable[T]) Min(fn func(item T) any) any {
 		return fn(t) // 不能直接返回0
 	}
 	minValue := fn(lst[0])
+	pointerMeta := fastReflect.PointerOf(minValue)
 	for index := 1; index < len(lst); index++ {
 		value := fn(lst[index])
-		if CompareLeftGreaterThanRight(minValue, value) {
+		if CompareLeftGreaterThanRight(pointerMeta, minValue, value) {
 			minValue = value
 		}
 	}
@@ -367,9 +369,10 @@ func (receiver Enumerable[T]) MinItem() T {
 		return t
 	}
 	minValue := lst[0]
+	pointerMeta := fastReflect.PointerOf(minValue)
 	for index := 1; index < len(lst); index++ {
 		value := lst[index]
-		if CompareLeftGreaterThanRight(minValue, value) {
+		if CompareLeftGreaterThanRight(pointerMeta, minValue, value) {
 			minValue = value
 		}
 	}
@@ -394,9 +397,10 @@ func (receiver Enumerable[T]) Max(fn func(item T) any) any {
 	}
 
 	maxValue := fn(lst[0])
+	pointerMeta := fastReflect.PointerOf(maxValue)
 	for index := 1; index < len(lst); index++ {
 		value := fn(lst[index])
-		if CompareLeftGreaterThanRight(value, maxValue) {
+		if CompareLeftGreaterThanRight(pointerMeta, value, maxValue) {
 			maxValue = value
 		}
 	}
@@ -420,9 +424,10 @@ func (receiver Enumerable[T]) MaxItem() T {
 		return t
 	}
 	maxValue := lst[0]
+	pointerMeta := fastReflect.PointerOf(maxValue)
 	for index := 1; index < len(lst); index++ {
 		value := lst[index]
-		if CompareLeftGreaterThanRight(value, maxValue) {
+		if CompareLeftGreaterThanRight(pointerMeta, value, maxValue) {
 			maxValue = value
 		}
 	}
@@ -493,7 +498,7 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 
 // OrderBy 正序排序，fn 返回的是要排序的字段的值
 func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
-	if receiver.lock == nil {
+	if receiver.lock == nil || len(*receiver.source) == 0 {
 		return receiver
 	}
 
@@ -502,18 +507,19 @@ func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
 
 	var lst []T
 	lst = append(lst, *receiver.source...)
+	pointerMeta := fastReflect.PointerOf(fn(lst[0]))
 
 	sort.SliceStable(lst, func(i, j int) bool {
 		leftValue := fn(lst[i])
 		rightValue := fn(lst[j])
-		return !CompareLeftGreaterThanRight(leftValue, rightValue)
+		return !CompareLeftGreaterThanRight(pointerMeta, leftValue, rightValue)
 	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // OrderByThen 自定义多条件，返回true时，排在前面
 func (receiver Enumerable[T]) OrderByThen(fn func(leftItem, rightItem T) bool) Enumerable[T] {
-	if receiver.lock == nil {
+	if receiver.lock == nil || len(*receiver.source) == 0 {
 		return receiver
 	}
 
@@ -531,7 +537,7 @@ func (receiver Enumerable[T]) OrderByThen(fn func(leftItem, rightItem T) bool) E
 
 // OrderByItem 正序排序，fn 返回的是要排序的字段的值
 func (receiver Enumerable[T]) OrderByItem() Enumerable[T] {
-	if receiver.lock == nil {
+	if receiver.lock == nil || len(*receiver.source) == 0 {
 		return receiver
 	}
 
@@ -540,18 +546,19 @@ func (receiver Enumerable[T]) OrderByItem() Enumerable[T] {
 
 	var lst []T
 	lst = append(lst, *receiver.source...)
+	pointerMeta := fastReflect.PointerOf(lst[0])
 
 	sort.SliceStable(lst, func(i, j int) bool {
 		leftValue := lst[i]
 		rightValue := lst[j]
-		return !CompareLeftGreaterThanRight(leftValue, rightValue)
+		return !CompareLeftGreaterThanRight(pointerMeta, leftValue, rightValue)
 	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // OrderByDescending 倒序排序，fn 返回的是要排序的字段的值
 func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[T] {
-	if receiver.lock == nil {
+	if receiver.lock == nil || len(*receiver.source) == 0 {
 		return receiver
 	}
 
@@ -560,18 +567,19 @@ func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[
 
 	var lst []T
 	lst = append(lst, *receiver.source...)
+	pointerMeta := fastReflect.PointerOf(fn(lst[0]))
 
 	sort.SliceStable(lst, func(i, j int) bool {
 		leftValue := fn(lst[i])
 		rightValue := fn(lst[j])
-		return CompareLeftGreaterThanRight(leftValue, rightValue)
+		return CompareLeftGreaterThanRight(pointerMeta, leftValue, rightValue)
 	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
 // OrderByDescendingItem 倒序排序，fn 返回的是要排序的字段的值
 func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
-	if receiver.lock == nil {
+	if receiver.lock == nil || len(*receiver.source) == 0 {
 		return receiver
 	}
 
@@ -580,11 +588,12 @@ func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 
 	var lst []T
 	lst = append(lst, *receiver.source...)
+	pointerMeta := fastReflect.PointerOf(lst[0])
 
 	sort.SliceStable(lst, func(i, j int) bool {
 		leftValue := lst[i]
 		rightValue := lst[j]
-		return CompareLeftGreaterThanRight(leftValue, rightValue)
+		return CompareLeftGreaterThanRight(pointerMeta, leftValue, rightValue)
 	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
