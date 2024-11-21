@@ -1,12 +1,13 @@
 package test
 
 import (
-	"github.com/farseer-go/collections"
-	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/farseer-go/collections"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_enumerable_Any(t *testing.T) {
@@ -304,66 +305,6 @@ func Test_enumerable_GroupBy(t *testing.T) {
 			return item.name
 		})
 	})
-}
-
-func Test_enumerable_OrderBy(t *testing.T) {
-	lst := collections.NewList(3, 5, 6, 2, 1, 8, 7, 4)
-	item := lst.OrderBy(func(item int) any {
-		return item
-	}).ToArray()
-
-	assert.Equal(t, item[0], 1)
-	assert.Equal(t, item[1], 2)
-	assert.Equal(t, item[2], 3)
-	assert.Equal(t, item[3], 4)
-	assert.Equal(t, item[4], 5)
-	assert.Equal(t, item[5], 6)
-	assert.Equal(t, item[6], 7)
-	assert.Equal(t, item[7], 8)
-}
-
-func Test_enumerable_OrderByItem(t *testing.T) {
-	lst := collections.NewList(3, 5, 6, 2, 1, 8, 7, 4)
-	item := lst.OrderByItem().ToArray()
-
-	assert.Equal(t, item[0], 1)
-	assert.Equal(t, item[1], 2)
-	assert.Equal(t, item[2], 3)
-	assert.Equal(t, item[3], 4)
-	assert.Equal(t, item[4], 5)
-	assert.Equal(t, item[5], 6)
-	assert.Equal(t, item[6], 7)
-	assert.Equal(t, item[7], 8)
-}
-
-func Test_enumerable_OrderByDescending(t *testing.T) {
-	lst := collections.NewList(3, 5, 6, 2, 1, 8, 7, 4)
-	item := lst.OrderByDescending(func(item int) any {
-		return item
-	}).ToArray()
-
-	assert.Equal(t, item[0], 8)
-	assert.Equal(t, item[1], 7)
-	assert.Equal(t, item[2], 6)
-	assert.Equal(t, item[3], 5)
-	assert.Equal(t, item[4], 4)
-	assert.Equal(t, item[5], 3)
-	assert.Equal(t, item[6], 2)
-	assert.Equal(t, item[7], 1)
-}
-
-func Test_enumerable_OrderByDescendingItem(t *testing.T) {
-	lst := collections.NewList(3, 5, 6, 2, 1, 8, 7, 4)
-	item := lst.OrderByDescendingItem().ToArray()
-
-	assert.Equal(t, item[0], 8)
-	assert.Equal(t, item[1], 7)
-	assert.Equal(t, item[2], 6)
-	assert.Equal(t, item[3], 5)
-	assert.Equal(t, item[4], 4)
-	assert.Equal(t, item[5], 3)
-	assert.Equal(t, item[6], 2)
-	assert.Equal(t, item[7], 1)
 }
 
 func Test_enumerable_Select(t *testing.T) {

@@ -3,6 +3,7 @@ package collections
 import (
 	"math/rand"
 	"reflect"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -502,28 +503,11 @@ func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
 	var lst []T
 	lst = append(lst, *receiver.source...)
 
-	// 首先拿数组第0个出来做为左边值
-	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
-		// 拿这个值与后面的值作比较
-		leftValue := fn(lst[leftIndex])
-
-		// 再拿出左边值索引后面的值一一对比
-		for rightIndex := leftIndex + 1; rightIndex < len(lst); rightIndex++ {
-			rightValue := fn(lst[rightIndex]) // 这个就是后面的值，会陆续跟数组后面的值做比较
-			rightItem := lst[rightIndex]
-
-			// 后面的值比前面的值小，说明要交换数据
-			if CompareLeftGreaterThanRight(leftValue, rightValue) {
-				// 开始交换数据，先从后面交换到前面
-				for swapIndex := rightIndex; swapIndex > leftIndex; swapIndex-- {
-					lst[swapIndex] = lst[swapIndex-1]
-				}
-				lst[leftIndex] = rightItem
-				leftValue = fn(lst[leftIndex])
-			}
-		}
-	}
-
+	sort.SliceStable(lst, func(i, j int) bool {
+		leftValue := fn(lst[i])
+		rightValue := fn(lst[j])
+		return !CompareLeftGreaterThanRight(leftValue, rightValue)
+	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
@@ -539,23 +523,9 @@ func (receiver Enumerable[T]) OrderByThen(fn func(leftItem, rightItem T) bool) E
 	var lst []T
 	lst = append(lst, *receiver.source...)
 
-	// 首先拿数组第0个出来做为左边值
-	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
-		// 再拿出左边值索引后面的值一一对比
-		for rightIndex := leftIndex + 1; rightIndex < len(lst); rightIndex++ {
-			rightItem := lst[rightIndex]
-
-			// 后面的值比前面的值小，说明要交换数据
-			if fn(lst[leftIndex], rightItem) {
-				// 开始交换数据，先从后面交换到前面
-				for swapIndex := rightIndex; swapIndex > leftIndex; swapIndex-- {
-					lst[swapIndex] = lst[swapIndex-1]
-				}
-				lst[leftIndex] = rightItem
-			}
-		}
-	}
-
+	sort.SliceStable(lst, func(i, j int) bool {
+		return !fn(lst[i], lst[j])
+	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
@@ -564,34 +534,18 @@ func (receiver Enumerable[T]) OrderByItem() Enumerable[T] {
 	if receiver.lock == nil {
 		return receiver
 	}
+
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
 	var lst []T
 	lst = append(lst, *receiver.source...)
 
-	// 首先拿数组第0个出来做为左边值
-	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
-		// 拿这个值与后面的值作比较
-		leftValue := lst[leftIndex]
-
-		// 再拿出左边值索引后面的值一一对比
-		for rightIndex := leftIndex + 1; rightIndex < len(lst); rightIndex++ {
-			rightValue := lst[rightIndex] // 这个就是后面的值，会陆续跟数组后面的值做比较
-			rightItem := lst[rightIndex]
-
-			// 后面的值比前面的值小，说明要交换数据
-			if CompareLeftGreaterThanRight(leftValue, rightValue) {
-				// 开始交换数据，先从后面交换到前面
-				for swapIndex := rightIndex; swapIndex > leftIndex; swapIndex-- {
-					lst[swapIndex] = lst[swapIndex-1]
-				}
-				lst[leftIndex] = rightItem
-				leftValue = lst[leftIndex]
-			}
-		}
-	}
-
+	sort.SliceStable(lst, func(i, j int) bool {
+		leftValue := lst[i]
+		rightValue := lst[j]
+		return !CompareLeftGreaterThanRight(leftValue, rightValue)
+	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
@@ -607,28 +561,11 @@ func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[
 	var lst []T
 	lst = append(lst, *receiver.source...)
 
-	// 首先拿数组第0个出来做为左边值
-	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
-		// 拿这个值与后面的值作比较
-		leftValue := fn(lst[leftIndex])
-
-		// 再拿出左边值索引后面的值一一对比
-		for rightIndex := leftIndex + 1; rightIndex < len(lst); rightIndex++ {
-			rightValue := fn(lst[rightIndex]) // 这个就是后面的值，会陆续跟数组后面的值做比较
-			rightItem := lst[rightIndex]
-
-			// 后面的值比前面的值小，说明要交换数据
-			if !CompareLeftGreaterThanRight(leftValue, rightValue) {
-				// 开始交换数据，先从后面交换到前面
-				for swapIndex := rightIndex; swapIndex > leftIndex; swapIndex-- {
-					lst[swapIndex] = lst[swapIndex-1]
-				}
-				lst[leftIndex] = rightItem
-				leftValue = fn(lst[leftIndex])
-			}
-		}
-	}
-
+	sort.SliceStable(lst, func(i, j int) bool {
+		leftValue := fn(lst[i])
+		rightValue := fn(lst[j])
+		return CompareLeftGreaterThanRight(leftValue, rightValue)
+	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
@@ -644,27 +581,11 @@ func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 	var lst []T
 	lst = append(lst, *receiver.source...)
 
-	// 首先拿数组第0个出来做为左边值
-	for leftIndex := 0; leftIndex < len(lst); leftIndex++ {
-		// 拿这个值与后面的值作比较
-		leftValue := lst[leftIndex]
-
-		// 再拿出左边值索引后面的值一一对比
-		for rightIndex := leftIndex + 1; rightIndex < len(lst); rightIndex++ {
-			rightValue := lst[rightIndex] // 这个就是后面的值，会陆续跟数组后面的值做比较
-			rightItem := lst[rightIndex]
-
-			// 后面的值比前面的值小，说明要交换数据
-			if !CompareLeftGreaterThanRight(leftValue, rightValue) {
-				// 开始交换数据，先从后面交换到前面
-				for swapIndex := rightIndex; swapIndex > leftIndex; swapIndex-- {
-					lst[swapIndex] = lst[swapIndex-1]
-				}
-				lst[leftIndex] = rightItem
-				leftValue = lst[leftIndex]
-			}
-		}
-	}
+	sort.SliceStable(lst, func(i, j int) bool {
+		leftValue := lst[i]
+		rightValue := lst[j]
+		return CompareLeftGreaterThanRight(leftValue, rightValue)
+	})
 	return Enumerable[T]{source: &lst, lock: &sync.RWMutex{}}
 }
 
