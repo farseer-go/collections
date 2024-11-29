@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/bytedance/sonic"
 	"github.com/farseer-go/fs/parse"
+	"github.com/farseer-go/fs/snc"
 )
 
 // List 集合
@@ -109,7 +109,7 @@ func (receiver List[T]) MarshalJSON() ([]byte, error) {
 	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
-	return sonic.Marshal(receiver.source)
+	return snc.Marshal(receiver.source)
 }
 
 // UnmarshalJSON to deserialize []byte
@@ -119,7 +119,7 @@ func (receiver *List[T]) UnmarshalJSON(b []byte) error {
 	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
-	return sonic.Unmarshal(b, receiver.source)
+	return snc.Unmarshal(b, receiver.source)
 }
 
 // GormDataType gorm common data type

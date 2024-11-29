@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/bytedance/sonic"
+	"github.com/farseer-go/fs/snc"
 )
 
 // Dictionary 字典
@@ -79,7 +79,7 @@ func (receiver *Dictionary[TKey, TValue]) Scan(val any) error {
 // UnmarshalJSON to deserialize []byte
 func (receiver *Dictionary[TKey, TValue]) UnmarshalJSON(ba []byte) error {
 	t := map[TKey]TValue{}
-	err := sonic.Unmarshal(ba, &t)
+	err := snc.Unmarshal(ba, &t)
 	*receiver = NewDictionaryFromMap(t)
 	return err
 }

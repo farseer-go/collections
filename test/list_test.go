@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/bytedance/sonic"
 	"github.com/farseer-go/collections"
+	"github.com/farseer-go/fs/snc"
 	"github.com/farseer-go/fs/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -101,10 +101,10 @@ func TestNil(t *testing.T) {
 
 func TestListJson(t *testing.T) {
 	var lst collections.List[int]
-	marshal, _ := sonic.Marshal(lst)
+	marshal, _ := snc.Marshal(lst)
 	assert.Equal(t, "[]", string(marshal))
 
-	_ = sonic.Unmarshal([]byte("[]"), &lst)
+	_ = snc.Unmarshal([]byte("[]"), &lst)
 	assert.False(t, lst.IsNil())
 }
 

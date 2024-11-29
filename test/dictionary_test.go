@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/bytedance/sonic"
 	"github.com/farseer-go/collections"
+	"github.com/farseer-go/fs/snc"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -212,10 +212,10 @@ func TestDictionary_IsNil(t *testing.T) {
 func TestDictionaryJson(t *testing.T) {
 	var dic collections.Dictionary[int, int]
 	assert.True(t, dic.IsNil())
-	marshal, _ := sonic.Marshal(dic)
+	marshal, _ := snc.Marshal(dic)
 	assert.Equal(t, "{}", string(marshal))
 
-	_ = sonic.Unmarshal([]byte("{}"), &dic)
+	_ = snc.Unmarshal([]byte("{}"), &dic)
 	assert.False(t, dic.IsNil())
 }
 
