@@ -1,8 +1,9 @@
 package collections
 
 import (
-	"github.com/farseer-go/fs/parse"
 	"sync"
+
+	"github.com/farseer-go/fs/parse"
 )
 
 type Collection[T any] struct {
