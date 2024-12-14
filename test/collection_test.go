@@ -23,6 +23,15 @@ func Test_collection_Add(t *testing.T) {
 	assert.Equal(t, 3, lst.Index(2))
 }
 
+func Test_collection_AddIfNotExists(t *testing.T) {
+	lst := collections.NewList[int](1, 2)
+	lst.AddIfNotExists(1)
+	lst.AddIfNotExists(2)
+	lst.AddIfNotExists(3)
+	assert.Equal(t, 3, lst.Count())
+	assert.Equal(t, 3, lst.Index(2))
+}
+
 func Test_collection_AddRange(t *testing.T) {
 	lst := collections.NewList[int]()
 	lst2 := collections.NewList[int](1, 2, 3)

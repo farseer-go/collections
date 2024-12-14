@@ -21,6 +21,19 @@ func (receiver *Collection[T]) Add(item ...T) {
 	}
 }
 
+// AddIfNotExists 如果元素不存在，则添加元素
+func (receiver *Collection[T]) AddIfNotExists(item T) {
+	receiver.lock.Lock()
+	defer receiver.lock.Unlock()
+
+	for _, t := range *receiver.source {
+		if parse.IsEqual(t, item) {
+			return
+		}
+	}
+	*receiver.source = append(*receiver.source, item)
+}
+
 // AddRange 添加元素
 func (receiver *Collection[T]) AddRange(lst Enumerable[T]) {
 	if lst.Count() > 0 {
