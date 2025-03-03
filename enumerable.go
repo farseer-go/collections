@@ -90,6 +90,18 @@ func (receiver Enumerable[T]) Last() T {
 	return t
 }
 
+// Last 集合最后一个元素
+func (receiver Enumerable[T]) LastAddr() *T {
+	if receiver.lock == nil || len(*receiver.source) == 0 {
+		return nil
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	return &(*receiver.source)[len(*receiver.source)-1]
+}
+
 // Count 集合大小
 func (receiver Enumerable[T]) Count() int {
 	if receiver.lock == nil {
