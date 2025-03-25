@@ -486,7 +486,7 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 		if findMapValue == nilValueOf {
 			// List集合
 			if mapValueIsListType {
-				findMapValue = types.ListNew(mapValueItemType)
+				findMapValue = types.ListNew(mapValueItemType, 0)
 			} else {
 				findMapValue = reflect.MakeSlice(mapValueItemType, 0, 0)
 			}
@@ -496,7 +496,7 @@ func (receiver Enumerable[T]) GroupBy(mapSlice any, getMapKeyFunc func(item T) a
 			// 在原来的List集合，做Add操作，必须保住该集合是指针类型
 			if findMapValue.Kind() != reflect.Pointer {
 				arrValues := types.GetListToArrayValue(findMapValue)
-				findMapValue = types.ListNew(mapValueItemType)
+				findMapValue = types.ListNew(mapValueItemType, 0)
 				types.ListAddValue(findMapValue, arrValues)
 			}
 			types.ListAddValue(findMapValue, reflect.ValueOf(item))
@@ -517,8 +517,8 @@ func (receiver Enumerable[T]) OrderBy(fn func(item T) any) Enumerable[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	var lst []T
-	lst = append(lst, *receiver.source...)
+	lst := make([]T, len(*receiver.source))
+	copy(lst, *receiver.source)
 	pointerMeta := fastReflect.PointerOf(fn(lst[0]))
 
 	sort.SliceStable(lst, func(i, j int) bool {
@@ -538,8 +538,8 @@ func (receiver Enumerable[T]) OrderByThen(fn func(leftItem, rightItem T) bool) E
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	var lst []T
-	lst = append(lst, *receiver.source...)
+	lst := make([]T, len(*receiver.source))
+	copy(lst, *receiver.source)
 
 	sort.SliceStable(lst, func(i, j int) bool {
 		return !fn(lst[i], lst[j])
@@ -556,8 +556,8 @@ func (receiver Enumerable[T]) OrderByItem() Enumerable[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	var lst []T
-	lst = append(lst, *receiver.source...)
+	lst := make([]T, len(*receiver.source))
+	copy(lst, *receiver.source)
 	pointerMeta := fastReflect.PointerOf(lst[0])
 
 	sort.SliceStable(lst, func(i, j int) bool {
@@ -577,8 +577,8 @@ func (receiver Enumerable[T]) OrderByDescending(fn func(item T) any) Enumerable[
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	var lst []T
-	lst = append(lst, *receiver.source...)
+	lst := make([]T, len(*receiver.source))
+	copy(lst, *receiver.source)
 	pointerMeta := fastReflect.PointerOf(fn(lst[0]))
 
 	sort.SliceStable(lst, func(i, j int) bool {
@@ -598,8 +598,8 @@ func (receiver Enumerable[T]) OrderByDescendingItem() Enumerable[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	var lst []T
-	lst = append(lst, *receiver.source...)
+	lst := make([]T, len(*receiver.source))
+	copy(lst, *receiver.source)
 	pointerMeta := fastReflect.PointerOf(lst[0])
 
 	sort.SliceStable(lst, func(i, j int) bool {
@@ -647,7 +647,7 @@ func (receiver Enumerable[T]) Select(sliceOrList any, fn func(item T) any) {
 	}
 	if sliceOrListType, isList := types.IsList(sliceOrListVal); isList {
 		// 初始化
-		value := types.ListNew(sliceOrListType)
+		value := types.ListNew(sliceOrListType, 0)
 
 		for _, item := range *receiver.source {
 			types.ListAdd(value, fn(item))
@@ -701,7 +701,7 @@ func (receiver Enumerable[T]) SelectMany(sliceOrList any, fn func(item T) any) {
 	}
 	if sliceOrListType, isList := types.IsList(sliceOrListVal); isList {
 		// 初始化
-		value := types.ListNew(sliceOrListType)
+		value := types.ListNew(sliceOrListType, 0)
 
 		for _, item := range *receiver.source {
 			types.ListAdd(value, fn(item))
@@ -937,7 +937,7 @@ func (receiver Enumerable[T]) Distinct() Enumerable[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	lst := NewList[T]()
+	lst := NewListCap[T](receiver.Count())
 
 	for _, item := range *receiver.source {
 		if !lst.Where(func(t T) bool { return reflect.DeepEqual(item, t) }).Any() {
@@ -956,7 +956,7 @@ func (receiver Enumerable[T]) Reverse() List[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	lst := NewList[T]()
+	lst := NewListCap[T](receiver.Count())
 	for i := len(*receiver.source) - 1; i >= 0; i-- {
 		lst.Add((*receiver.source)[i])
 	}

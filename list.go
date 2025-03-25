@@ -38,10 +38,17 @@ func NewList[T any](source ...T) List[T] {
 	return lst
 }
 
+// NewList 创建集合并设置容量
+func NewListCap[T any](count int) List[T] {
+	var lst = List[T]{}
+	lst.New(count)
+	return lst
+}
+
 // NewListFromChan 创建集合，将chan中的数据填充到集合
 func NewListFromChan[T any](c chan T) List[T] {
 	var lst = List[T]{}
-	lst.New()
+	lst.New(len(c))
 	for len(c) > 0 {
 		lst.Add(<-c)
 	}
@@ -61,16 +68,16 @@ func (receiver *List[T]) AsEnumerable() Enumerable[T] {
 }
 
 // New 返回enumerable类型
-func (receiver *List[T]) New() {
+func (receiver *List[T]) New(cap int) {
 	if receiver.source == nil {
 		var lock sync.RWMutex
-		source := &[]T{}
+		source := make([]T, 0, cap)
 
-		receiver.source = source
-		receiver.IList.source = source
-		receiver.IList.Collection.source = source
+		receiver.source = &source
+		receiver.IList.source = &source
+		receiver.IList.Collection.source = &source
 		receiver.IList.Collection.lock = &lock
-		receiver.Enumerable.source = source
+		receiver.Enumerable.source = &source
 		receiver.Enumerable.lock = &lock
 	}
 }
@@ -123,7 +130,7 @@ func (receiver List[T]) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON to deserialize []byte
 func (receiver *List[T]) UnmarshalJSON(b []byte) error {
 	if receiver.IsNil() {
-		receiver.New()
+		receiver.New(0)
 	}
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()

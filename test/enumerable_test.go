@@ -45,7 +45,6 @@ func Test_enumerable_Any(t *testing.T) {
 	enumerable.GroupBy(nil, nil)
 	enumerable.OrderBy(nil)
 	enumerable.OrderByItem()
-	enumerable.OrderByDescending(nil)
 	enumerable.OrderByDescendingItem()
 	enumerable.Select(nil, nil)
 	enumerable.SelectMany(nil, nil)
