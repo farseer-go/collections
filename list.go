@@ -25,8 +25,16 @@ func ToList[T any](arr string) List[T] {
 // NewList 创建集合
 func NewList[T any](source ...T) List[T] {
 	var lst = List[T]{}
-	lst.New()
-	lst.Add(source...)
+	var lock sync.RWMutex
+
+	//*receiver.source = make([]T, len(item))
+	//copy(*receiver.source, item)
+	lst.source = &source
+	lst.IList.source = &source
+	lst.IList.Collection.source = &source
+	lst.IList.Collection.lock = &lock
+	lst.Enumerable.source = &source
+	lst.Enumerable.lock = &lock
 	return lst
 }
 
