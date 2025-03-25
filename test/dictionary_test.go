@@ -136,7 +136,7 @@ func TestDictionary_Value(t *testing.T) {
 	maps["age"] = "18"
 	dic := collections.NewDictionaryFromMap[string, string](maps)
 	value, err := dic.Value()
-	assert.Equal(t, value, "{\"age\":\"18\",\"name\":\"steden\"}")
+	assert.Equal(t, value, "{\"name\":\"steden\",\"age\":\"18\"}")
 	assert.Equal(t, err, nil)
 	dic = collections.NewDictionaryFromMap[string, string](nil)
 	value, err = dic.Value()

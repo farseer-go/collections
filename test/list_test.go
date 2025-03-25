@@ -10,6 +10,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestList_NewListCap(t *testing.T) {
+	lst := collections.NewListCap[int](3)
+	lst.Add(1)
+	lst.Add(2)
+	lst.Add(3)
+	lst.Add(4)
+
+	assert.Equal(t, 4, lst.Count())
+	assert.Equal(t, 1, lst.Index(0))
+	assert.Equal(t, 2, lst.Index(1))
+	assert.Equal(t, 3, lst.Index(2))
+	assert.Equal(t, 4, lst.Index(3))
+}
+
 func TestList_AsEnumerable(t *testing.T) {
 	lst := collections.NewList[int](1, 2, 3)
 	lst.ToList()

@@ -780,7 +780,10 @@ func (receiver Enumerable[T]) ToList() List[T] {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
-	return NewList(*receiver.source...)
+	// 采用复制，而不引用原集合
+	cloneArr := make([]T, len(*receiver.source))
+	copy(cloneArr, *receiver.source)
+	return NewList(cloneArr...)
 }
 
 // ToArray 转成数组
