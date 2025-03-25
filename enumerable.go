@@ -1068,6 +1068,21 @@ func (receiver Enumerable[T]) Foreach(itemFn func(item *T)) {
 	}
 }
 
+// ForeachReverse 倒序 for range 操作
+func (receiver Enumerable[T]) ForeachReverse(itemFn func(item *T)) {
+	if receiver.lock == nil {
+		return
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	for i := len(*receiver.source) - 1; i >= 0; i-- {
+		item := &(*receiver.source)[i]
+		itemFn(item)
+	}
+}
+
 // Parallel for range 并行操作
 func (receiver Enumerable[T]) Parallel(itemFn func(item *T)) {
 	if receiver.lock == nil {
