@@ -27,6 +27,10 @@ func NewList[T any](source ...T) List[T] {
 	var lst = List[T]{}
 	var lock sync.RWMutex
 
+	// 如果为nil，则要初始化
+	if source == nil {
+		source = make([]T, 0)
+	}
 	//*receiver.source = make([]T, len(item))
 	//copy(*receiver.source, item)
 	lst.source = &source
