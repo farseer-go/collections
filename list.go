@@ -74,15 +74,14 @@ func (receiver *List[T]) AsEnumerable() Enumerable[T] {
 // New 返回enumerable类型
 func (receiver *List[T]) New(cap int) {
 	if receiver.source == nil {
-		var lock sync.RWMutex
+		lock := &sync.RWMutex{}
 		source := make([]T, 0, cap)
-
 		receiver.source = &source
+		receiver.Enumerable.source = &source
 		receiver.IList.source = &source
 		receiver.IList.Collection.source = &source
-		receiver.IList.Collection.lock = &lock
-		receiver.Enumerable.source = &source
-		receiver.Enumerable.lock = &lock
+		receiver.IList.Collection.lock = lock
+		receiver.Enumerable.lock = lock
 	}
 }
 

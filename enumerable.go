@@ -158,8 +158,9 @@ func (receiver Enumerable[T]) ContainsPrefix(item T) bool {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
+	strItem := parse.ToString(item)
 	for _, t := range *receiver.source {
-		if strings.HasPrefix(parse.ToString(t), parse.ToString(item)) {
+		if strings.HasPrefix(parse.ToString(t), strItem) {
 			return true
 		}
 	}
@@ -175,8 +176,9 @@ func (receiver Enumerable[T]) ContainsSuffix(item T) bool {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
+	strItem := parse.ToString(item)
 	for _, t := range *receiver.source {
-		if strings.HasSuffix(parse.ToString(t), parse.ToString(item)) {
+		if strings.HasSuffix(parse.ToString(t), strItem) {
 			return true
 		}
 	}
@@ -192,8 +194,9 @@ func (receiver Enumerable[T]) ContainsAny(item T) bool {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
+	strItem := parse.ToString(item)
 	for _, t := range *receiver.source {
-		if strings.Contains(parse.ToString(t), parse.ToString(item)) {
+		if strings.Contains(parse.ToString(t), strItem) {
 			return true
 		}
 	}
