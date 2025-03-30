@@ -14,7 +14,7 @@ func Test_dictionary_Values(t *testing.T) {
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	array := dic.Values().ToArray()
 	assert.True(t, true, array[0] == "steden" || array[0] == "18")
 	assert.True(t, true, array[1] == "steden" || array[0] == "18")
@@ -27,7 +27,7 @@ func Test_dictionary_Keys(t *testing.T) {
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	lst := dic.Keys()
 	assert.Equal(t, 2, lst.Count())
 	assert.True(t, lst.Contains("name"))
@@ -39,7 +39,7 @@ func Test_dictionary_Count(t *testing.T) {
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	assert.Equal(t, dic.Count(), 2)
 }
 
@@ -47,7 +47,7 @@ func Test_dictionary_Add(t *testing.T) {
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	assert.Equal(t, 2, dic.Count())
 	dic.Add("sex", "boy")
 	assert.Equal(t, 3, dic.Count())
@@ -61,7 +61,7 @@ func Test_dictionary_Update(t *testing.T) {
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	dic.Update("name", func(value *string) {
 		*value = "tao"
 	})
@@ -80,7 +80,7 @@ func Test_dictionary_Clear(t *testing.T) {
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	assert.Equal(t, 2, dic.Count())
 	dic.Clear()
 	assert.Equal(t, 0, dic.Count())
@@ -112,7 +112,7 @@ func Test_dictionary_ContainsValue(t *testing.T) {
 
 func TestDictionary_ToMap(t *testing.T) {
 	maps := map[string]string{"name": "steden", "age": "18"}
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	tomap := dic.ToMap()
 
 	assert.Equal(t, len(maps), len(tomap))
@@ -122,7 +122,7 @@ func TestDictionary_ToMap(t *testing.T) {
 
 func TestDictionary_ToReadonlyDictionary(t *testing.T) {
 	maps := map[string]string{"name": "steden", "age": "18"}
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	readonly := dic.ToReadonlyDictionary()
 	tomap := readonly.ToMap()
 	assert.Equal(t, len(maps), len(tomap))
@@ -134,9 +134,9 @@ func TestDictionary_Value(t *testing.T) {
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
-	dic := collections.NewDictionaryFromMap[string, string](maps)
+	dic := collections.NewDictionaryFromMap(maps)
 	value, err := dic.Value()
-	assert.Equal(t, value, "{\"name\":\"steden\",\"age\":\"18\"}")
+	assert.Equal(t, value, "{\"age\":\"18\",\"name\":\"steden\"}")
 	assert.Equal(t, err, nil)
 	dic = collections.NewDictionaryFromMap[string, string](nil)
 	value, err = dic.Value()
@@ -200,7 +200,7 @@ func TestDictionary_IsNil(t *testing.T) {
 	maps := make(map[string]string)
 	maps["name"] = "steden"
 	maps["age"] = "18"
-	dic2 := collections.NewDictionaryFromMap[string, string](maps)
+	dic2 := collections.NewDictionaryFromMap(maps)
 	val = dic2.IsNil()
 	assert.Equal(t, val, false)
 
