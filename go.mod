@@ -1,11 +1,11 @@
 module github.com/farseer-go/collections
 
-go 1.22
+go 1.23.0
 
-toolchain go1.23.3
+toolchain go1.23.8
 
 require (
-	github.com/farseer-go/fs v0.16.4
+	github.com/farseer-go/fs v0.16.6
 	github.com/stretchr/testify v1.10.0
 	github.com/timandy/routine v1.1.5
 )
