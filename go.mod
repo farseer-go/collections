@@ -18,5 +18,3 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/farseer-go/fs => github.com/farseer-go/fs v0.16.4
