@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.8
 
 require (
-	github.com/farseer-go/fs v0.17.0
+	github.com/farseer-go/fs v0.17.1
 	github.com/stretchr/testify v1.10.0
 	github.com/timandy/routine v1.1.5
 )
