@@ -9,7 +9,7 @@ func NewListAny(source ...any) ListAny {
 	if source == nil {
 		lst = NewList[any]()
 	} else {
-		lst = NewList[any](source...)
+		lst = NewList(source...)
 	}
 	return ListAny{
 		List: lst,
