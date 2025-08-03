@@ -69,7 +69,8 @@ func (receiver *Collection[T]) Clear() {
 	receiver.lock.Lock()
 	defer receiver.lock.Unlock()
 
-	*receiver.source = []T{}
+	//*receiver.source = []T{}
+	*receiver.source = (*receiver.source)[:0]
 }
 
 // Remove 移除元素
