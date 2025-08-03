@@ -64,15 +64,6 @@ func (receiver *Collection[T]) AddArray(arr []T) {
 	}
 }
 
-// Clear 清空集合
-func (receiver *Collection[T]) Clear() {
-	receiver.lock.Lock()
-	defer receiver.lock.Unlock()
-
-	//*receiver.source = []T{}
-	*receiver.source = (*receiver.source)[:0]
-}
-
 // Remove 移除元素
 func (receiver *Collection[T]) Remove(item T) {
 	receiver.lock.Lock()

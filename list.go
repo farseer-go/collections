@@ -70,6 +70,18 @@ func (receiver *List[T]) Release() {
 	receiver.Enumerable.source = nil
 }
 
+// Clear 清空集合
+func (receiver *List[T]) Clear() {
+	receiver.lock.Lock()
+	defer receiver.lock.Unlock()
+
+	//*receiver.source = []T{}
+	*receiver.source = (*receiver.source)[:0]
+	receiver.IList.source = receiver.source
+	receiver.IList.Collection.source = receiver.source
+	receiver.Enumerable.source = receiver.source
+}
+
 // AsEnumerable 返回enumerable类型
 func (receiver *List[T]) AsEnumerable() Enumerable[T] {
 	receiver.lock.RLock()
