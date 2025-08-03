@@ -59,6 +59,17 @@ func NewListFromChan[T any](c chan T) List[T] {
 	return lst
 }
 
+// Release 清空集合
+func (receiver *List[T]) Release() {
+	receiver.lock.Lock()
+	defer receiver.lock.Unlock()
+
+	receiver.source = nil
+	receiver.IList.source = nil
+	receiver.IList.Collection.source = nil
+	receiver.Enumerable.source = nil
+}
+
 // AsEnumerable 返回enumerable类型
 func (receiver *List[T]) AsEnumerable() Enumerable[T] {
 	receiver.lock.RLock()

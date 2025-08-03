@@ -73,14 +73,6 @@ func (receiver *Collection[T]) Clear() {
 	*receiver.source = (*receiver.source)[:0]
 }
 
-// Release 清空集合
-func (receiver *Collection[T]) Release() {
-	receiver.lock.Lock()
-	defer receiver.lock.Unlock()
-
-	*receiver.source = nil
-}
-
 // Remove 移除元素
 func (receiver *Collection[T]) Remove(item T) {
 	receiver.lock.Lock()
