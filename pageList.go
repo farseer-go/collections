@@ -16,6 +16,13 @@ func NewPageList[TData any](list List[TData], recordCount int64) PageList[TData]
 	}
 }
 
+func (receiver PageList[TData]) ToPageListAny() PageList[any] {
+	return PageList[any]{
+		List:        receiver.List.ToListAny().List,
+		RecordCount: receiver.RecordCount,
+	}
+}
+
 //// MapToPageList 类型转换，如PageList[PO]转PageList[DO]
 //func (receiver PageList[TData]) MapToPageList(pageList any) {
 //	pageListValue := reflect.ValueOf(pageList).Elem()
