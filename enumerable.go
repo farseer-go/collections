@@ -1099,17 +1099,18 @@ func (receiver Enumerable[T]) Parallel(maxConcurrent int, itemFn func(item *T)) 
 	defer receiver.lock.RUnlock()
 
 	// 并发采集（限制并发数）
+	if maxConcurrent < 1 {
+		maxConcurrent = 1
+	}
 	sem := make(chan struct{}, maxConcurrent)
 	var wg sync.WaitGroup
-
-	wg.Add(len(*receiver.source))
 	for i := 0; i < len(*receiver.source); i++ {
 		item := &(*receiver.source)[i]
+		sem <- struct{}{}
+
 		wg.Add(1)
 		routine.Go(func() {
 			defer wg.Done()
-
-			sem <- struct{}{}
 			defer func() { <-sem }()
 
 			itemFn(item)
@@ -1128,17 +1129,20 @@ func (receiver Enumerable[T]) ParallelIndex(maxConcurrent int, itemFn func(index
 	defer receiver.lock.RUnlock()
 
 	// 并发采集（限制并发数）
+	if maxConcurrent < 1 {
+		maxConcurrent = 1
+	}
+
+	// 并发采集（限制并发数）
 	sem := make(chan struct{}, maxConcurrent)
 	var wg sync.WaitGroup
-
-	wg.Add(len(*receiver.source))
 	for i := 0; i < len(*receiver.source); i++ {
 		item := &(*receiver.source)[i]
+		sem <- struct{}{}
+
 		wg.Add(1)
 		routine.Go(func() {
 			defer wg.Done()
-
-			sem <- struct{}{}
 			defer func() { <-sem }()
 
 			itemFn(i, item)
