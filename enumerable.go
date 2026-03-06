@@ -1090,7 +1090,7 @@ func (receiver Enumerable[T]) ForeachReverse(itemFn func(item *T)) {
 }
 
 // Parallel for range 并行操作
-func (receiver Enumerable[T]) Parallel(itemFn func(item *T)) {
+func (receiver Enumerable[T]) Parallel(maxConcurrent int, itemFn func(item *T)) {
 	if receiver.lock == nil {
 		return
 	}
@@ -1098,13 +1098,50 @@ func (receiver Enumerable[T]) Parallel(itemFn func(item *T)) {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 
+	// 并发采集（限制并发数）
+	sem := make(chan struct{}, maxConcurrent)
 	var wg sync.WaitGroup
+
 	wg.Add(len(*receiver.source))
 	for i := 0; i < len(*receiver.source); i++ {
 		item := &(*receiver.source)[i]
+		wg.Add(1)
 		routine.Go(func() {
 			defer wg.Done()
+
+			sem <- struct{}{}
+			defer func() { <-sem }()
+
 			itemFn(item)
+		})
+	}
+	wg.Wait()
+}
+
+// Parallel for range 并行操作
+func (receiver Enumerable[T]) ParallelIndex(maxConcurrent int, itemFn func(index int, item *T)) {
+	if receiver.lock == nil {
+		return
+	}
+
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	// 并发采集（限制并发数）
+	sem := make(chan struct{}, maxConcurrent)
+	var wg sync.WaitGroup
+
+	wg.Add(len(*receiver.source))
+	for i := 0; i < len(*receiver.source); i++ {
+		item := &(*receiver.source)[i]
+		wg.Add(1)
+		routine.Go(func() {
+			defer wg.Done()
+
+			sem <- struct{}{}
+			defer func() { <-sem }()
+
+			itemFn(i, item)
 		})
 	}
 	wg.Wait()
