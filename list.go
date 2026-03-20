@@ -8,6 +8,7 @@ import (
 
 	"github.com/farseer-go/fs/parse"
 	"github.com/farseer-go/fs/snc"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 // List 集合
@@ -161,6 +162,30 @@ func (receiver *List[T]) UnmarshalJSON(b []byte) error {
 	receiver.lock.RLock()
 	defer receiver.lock.RUnlock()
 	return snc.Unmarshal(b, receiver.source)
+}
+
+// MarshalMsgpack 实现自定义 Msgpack 序列化
+func (receiver List[T]) MarshalMsgpack() ([]byte, error) {
+	if receiver.IsNil() {
+		// Msgpack 的空数组表示
+		return msgpack.Marshal([]T{})
+	}
+	receiver.lock.RLock()
+	defer receiver.lock.RUnlock()
+
+	// 直接序列化内部的 source
+	return msgpack.Marshal(receiver.source)
+}
+
+// UnmarshalMsgpack 实现自定义 Msgpack 反序列化
+func (receiver *List[T]) UnmarshalMsgpack(b []byte) error {
+	if receiver.IsNil() {
+		receiver.New(0)
+	}
+	receiver.lock.Lock() // 注意：写入操作建议用 Lock 而不是 RLock
+	defer receiver.lock.Unlock()
+
+	return msgpack.Unmarshal(b, receiver.source)
 }
 
 // GormDataType gorm common data type

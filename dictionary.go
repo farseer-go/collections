@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/farseer-go/fs/snc"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 // Dictionary 字典
@@ -82,6 +83,24 @@ func (receiver *Dictionary[TKey, TValue]) UnmarshalJSON(ba []byte) error {
 	err := snc.Unmarshal(ba, &t)
 	*receiver = NewDictionaryFromMap(t)
 	return err
+}
+
+// UnmarshalMsgpack 实现自定义 Msgpack 反序列化
+func (receiver *Dictionary[TKey, TValue]) UnmarshalMsgpack(ba []byte) error {
+	// 1. 定义一个临时的 map 用来接收二进制数据
+	t := make(map[TKey]TValue)
+
+	// 2. 使用 msgpack 反序列化到 map
+	err := msgpack.Unmarshal(ba, &t)
+	if err != nil {
+		return err
+	}
+
+	// 3. 将 map 转换为你的自定义 Dictionary 结构
+	// 注意：这里需要确保 NewDictionaryFromMap 处理了并发安全（初始化锁等）
+	*receiver = NewDictionaryFromMap(t)
+
+	return nil
 }
 
 // ToReadonlyDictionary 转成ReadonlyDictionary对象
