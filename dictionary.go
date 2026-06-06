@@ -3,8 +3,10 @@ package collections
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"sync"
 
+	"github.com/farseer-go/fs/fastReflect"
 	"github.com/farseer-go/fs/snc"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -124,4 +126,40 @@ func (receiver *Dictionary[TKey, TValue]) Foreach(itemFn func(TKey, TValue)) {
 		itemFn(key.(TKey), value.(TValue))
 		return true
 	})
+}
+
+// DictionaryItem 用于存储排序时的键值对
+type DictionaryItem[TKey comparable, TValue any] struct {
+	Key   TKey
+	Value TValue
+}
+
+// OrderBy 按 Key 或 Value 的某个字段排序，返回一个有序的切片（或包装后的 Enumerable）
+func (receiver *Dictionary[TKey, TValue]) OrderBy(fn func(item DictionaryItem[TKey, TValue]) any) []DictionaryItem[TKey, TValue] {
+	if receiver.source == nil {
+		return nil
+	}
+
+	// 1. 导出数据到切片
+	var lst []DictionaryItem[TKey, TValue]
+	receiver.Foreach(func(k TKey, v TValue) {
+		lst = append(lst, DictionaryItem[TKey, TValue]{Key: k, Value: v})
+	})
+
+	if len(lst) == 0 {
+		return lst
+	}
+
+	// 2. 参考提供的风格，利用反射获取类型元数据进行比较
+	// 假设 fastReflect 和 CompareLeftGreaterThanRight 是你框架内的公共方法
+	pointerMeta := fastReflect.PointerOf(fn(lst[0]))
+
+	sort.SliceStable(lst, func(i, j int) bool {
+		leftValue := fn(lst[i])
+		rightValue := fn(lst[j])
+		// 返回 !大于，即小于等于，实现升序
+		return !CompareLeftGreaterThanRight(pointerMeta, leftValue, rightValue)
+	})
+
+	return lst
 }
